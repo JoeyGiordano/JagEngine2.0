@@ -9,8 +9,6 @@ public class GameManager extends AbstractGame implements Constants {
 	//if using eclipse make sure to add the resources folder to the build path (right-click res folder -> Build Path -> Use as source folder
 	TestObject object, object2, object3, object4, platform;
 	
-	//TODO do the update thing
-	
 	@Override
 	public void init(GameContainer gc) {
 		//all
