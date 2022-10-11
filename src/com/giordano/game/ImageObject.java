@@ -17,6 +17,8 @@ public abstract class ImageObject extends GameObject {
 	}
 	
 	public void render(GameContainer gc, Renderer r) {
+		super.render(gc, r);
+		
 		if (image == null) {
 			resetImage();
 		}

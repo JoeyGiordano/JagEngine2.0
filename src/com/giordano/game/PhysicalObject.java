@@ -16,19 +16,16 @@ public abstract class PhysicalObject extends ImageObject {
 		this.fixed = fixed;
 	}
 	
-	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
+		super.update(gc, gm, dt);
+		
 		if (useGravity) {
 			velY += dt * GRAVITY;
 		}
 		
-		update1(gc, gm, dt);
-		
 		posX += velX;
 		posY += velY;
 	}
-	
-	public abstract void update1(GameContainer gc, GameManager gm, float dt);
 	
 	public boolean isUseGravity() {
 		return useGravity;

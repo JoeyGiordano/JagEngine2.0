@@ -33,7 +33,7 @@ public abstract class AbstractGame implements Constants {
 		
 		camera.update(gm, gc, dt);
 		for (GameObject obj : objects) {
-			obj.Update(gc, gm, dt);
+			obj.update(gc, gm, dt);
 		}
 		for (Updateable u : Updateable.updateables) {
 			u.update();

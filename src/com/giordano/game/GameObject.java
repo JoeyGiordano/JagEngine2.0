@@ -9,6 +9,10 @@ import com.giordano.engine.gfx.ImageTile;
 
 public abstract class GameObject implements Constants {
 	
+	//the superclass for all things that will exist in the game
+	//the update and render are defined empty here, but subclasses can override them to add functionalities
+	//subclasses of subclasses that override the update and render methods should call super.update() so functionalities are not lost
+	
 	private String tag;
 	protected double posX, posY;
 	protected GameObject[] collisionObjects;
@@ -22,11 +26,12 @@ public abstract class GameObject implements Constants {
 		collisionObjects = new GameObject[] {};
 	}
 	
-	public abstract void update(GameContainer gc, GameManager gm, float dt);
-	public abstract void render(GameContainer gc, Renderer r);
+	public void update(GameContainer gc, GameManager gm, float dt) {
+		
+	}
 	
-	public void Update(GameContainer gc, GameManager gm, float dt) {
-		update(gc, gm, dt);
+	public void render(GameContainer gc, Renderer r) {
+		
 	}
 	
 	public void destroy() {
