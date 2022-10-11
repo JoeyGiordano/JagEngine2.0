@@ -14,7 +14,7 @@ public class GameManager extends AbstractGame implements Constants {
 	@Override
 	public void init(GameContainer gc) {
 		//all
-		/*
+		//*
 		object = new TestObject("test", 0, 0, "/testStageBlock.png", true, false, false);
 		object2 = new TestObject("test1", 110, 90, "/testStageBlock2.png", true, false, false);
 		object3 = new TestObject("test2", -90, 90, "/testStageBlock2.png", true, false, false);
