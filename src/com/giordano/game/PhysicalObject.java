@@ -7,7 +7,7 @@ public abstract class PhysicalObject extends ImageObject {
 	protected boolean useGravity, transparent, fixed;
 	protected double velX, velY;
 	protected double mass;
-	protected double elasticity;
+	protected double elasticity, friction;
 	
 	//for the collision detector
 	private int fixation;
@@ -22,6 +22,7 @@ public abstract class PhysicalObject extends ImageObject {
 		this.fixed = fixed;
 		mass = 1;
 		elasticity = 0.7;
+		friction = 0.3;
 	}
 	
 	public void update(GameContainer gc, GameManager gm, float dt) {
@@ -102,4 +103,11 @@ public abstract class PhysicalObject extends ImageObject {
 	public void setElasticity(double elasticity) {
 		this.elasticity = elasticity;
 	}
+	public double getFriction() {
+		return friction;
+	}
+	public void setFriction(double friction) {
+		this.friction = friction;
+	}
+	
 }

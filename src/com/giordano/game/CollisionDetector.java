@@ -81,12 +81,6 @@ public class CollisionDetector implements Updateable, Constants {
 			if (((PhysicalObject)go).getSquaredVelocityMagnitude() > Math.pow(WARNING_SPEED,2)) {
 				System.out.println("Warning: PhysicalObject " + go.getTag() + " had a speed of " + ((PhysicalObject)go).getVelocityMagnitude() + " which exceeds safe speeds");
 			}
-			/*if (go.getTag() == "test") {
-				System.out.println(((PhysicalObject)go).getVelocityMagnitude() + " test");
-			}*/
-			if (go.getTag() == "test1") {
-				System.out.println(((PhysicalObject)go).velX + " " + ((PhysicalObject)go).velY + " test1");
-			}
 		}
 		
 		//*** pos abbreviates PhysicalObjects, not position
@@ -239,11 +233,6 @@ public class CollisionDetector implements Updateable, Constants {
 	}*/
 	
 	private void executeCollisionEffects() {
-		if (collisionEffects.size() != 0)
-		System.out.println(collisionEffects.get(0)[0].getTag() + collisionEffects.get(0)[1].getTag());
-		if (collisionEffects.size() > 1) {
-			System.out.println(collisionEffects.get(1)[0].getTag() + collisionEffects.get(1)[1].getTag());
-		}
 		
 		for (int i = 0; i < collisionEffects.size(); i++) {
 			PhysicalObject[] p = collisionEffects.get(i);
@@ -259,23 +248,15 @@ public class CollisionDetector implements Updateable, Constants {
 				}
 			}
 		}
-		if (collisionEffects.size() != 0)
-		System.out.println(collisionEffects.size());
 		
 		for (int i = 0; i < collisionEffects.size(); i++) {
 			PhysicalObject po1 = collisionEffects.get(i)[0];
 			PhysicalObject po2 = collisionEffects.get(i)[1];
 			String dir = collisionEffectDirs.get(i);
-			/*if (po1.getTag() == "test" && po2.getTag() == "test2") {
-				System.out.println("Here");
-			}
-			if (po1.getTag() == "test2" && po2.getTag() == "test") {
-				System.out.println("Here");
-			}*/
 			boolean fix1 = po1.getFixation() == 0;
 			boolean fix2 = po2.getFixation() == 0;
 			bounce(po1, fix1, po2, fix2, dir);
-			//friction();
+			friction(po1, po2, dir);
 		}
 		collisionEffects.clear();
 		collisionEffectDirs.clear();
@@ -328,10 +309,20 @@ public class CollisionDetector implements Updateable, Constants {
 		
 	}
 	
-	/* to be implemented later
-	private void friction() {
+	private void friction(PhysicalObject p1, PhysicalObject p2, String dir) {
+		double m1 = p1.getMass();
+		double m2 = p2.getMass();
+		double f = p1.getFriction() * p2.getFriction();
 		
-	}*/
+		if (dir == "x") {
+			p1.velY *= 1-f;
+			p2.velY *= 1-f;
+		}
+		if (dir == "y") {
+			p1.velX *= 1-f;
+			p2.velX *= 1-f;
+		}
+	}
 	
 	private String adjustPosition(PhysicalObject po1, boolean fix1, PhysicalObject po2, boolean fix2) {
 		if (!checkCollision(po1, po2)) return "alreadyResolved";
