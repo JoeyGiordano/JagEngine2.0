@@ -81,6 +81,12 @@ public class CollisionDetector implements Updateable, Constants {
 			if (((PhysicalObject)go).getSquaredVelocityMagnitude() > Math.pow(WARNING_SPEED,2)) {
 				System.out.println("Warning: PhysicalObject " + go.getTag() + " had a speed of " + ((PhysicalObject)go).getVelocityMagnitude() + " which exceeds safe speeds");
 			}
+			/*if (go.getTag() == "test") {
+				System.out.println(((PhysicalObject)go).getVelocityMagnitude() + " test");
+			}*/
+			if (go.getTag() == "test1") {
+				System.out.println(((PhysicalObject)go).velX + " " + ((PhysicalObject)go).velY + " test1");
+			}
 		}
 		
 		//*** pos abbreviates PhysicalObjects, not position
@@ -233,31 +239,39 @@ public class CollisionDetector implements Updateable, Constants {
 	}*/
 	
 	private void executeCollisionEffects() {
+		if (collisionEffects.size() != 0)
+		System.out.println(collisionEffects.get(0)[0].getTag() + collisionEffects.get(0)[1].getTag());
+		if (collisionEffects.size() > 1) {
+			System.out.println(collisionEffects.get(1)[0].getTag() + collisionEffects.get(1)[1].getTag());
+		}
+		
 		for (int i = 0; i < collisionEffects.size(); i++) {
 			PhysicalObject[] p = collisionEffects.get(i);
 			String dir = collisionEffectDirs.get(i);
 			for (int j = 0; j < collisionEffects.size(); j++) {
 				if (i == j) continue;
 				if (dir != collisionEffectDirs.get(j)) continue;
-				if (p[0] == collisionEffects.get(j)[0] && p[1] == collisionEffects.get(j)[1] || 
-						p[1] == collisionEffects.get(j)[0] && p[0] == collisionEffects.get(j)[1]) {
+				if ((p[0] == collisionEffects.get(j)[0] && p[1] == collisionEffects.get(j)[1]) || 
+						(p[1] == collisionEffects.get(j)[0] && p[0] == collisionEffects.get(j)[1])) {
 					collisionEffects.remove(j);
 					collisionEffectDirs.remove(j);
+					if (j < i) i--;
 				}
-				if (j < i) i--;
 			}
 		}
+		if (collisionEffects.size() != 0)
+		System.out.println(collisionEffects.size());
 		
 		for (int i = 0; i < collisionEffects.size(); i++) {
 			PhysicalObject po1 = collisionEffects.get(i)[0];
 			PhysicalObject po2 = collisionEffects.get(i)[1];
 			String dir = collisionEffectDirs.get(i);
-			if (po1.getTag() == "test" && po2.getTag() == "test2") {
+			/*if (po1.getTag() == "test" && po2.getTag() == "test2") {
 				System.out.println("Here");
 			}
 			if (po1.getTag() == "test2" && po2.getTag() == "test") {
 				System.out.println("Here");
-			}
+			}*/
 			boolean fix1 = po1.getFixation() == 0;
 			boolean fix2 = po2.getFixation() == 0;
 			bounce(po1, fix1, po2, fix2, dir);

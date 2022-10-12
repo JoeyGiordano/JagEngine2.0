@@ -39,10 +39,11 @@ public class GameManager extends AbstractGame implements Constants {
 		//*
 		object = new TestObject("test", 0, 90, "/testStageBlock.png", true, false, false);
 		object2 = new TestObject("test1", 90, 80, "/testStageBlock2.png", true, false, false);
-		//object3 = new TestObject("test1", -10, 0, "/testStageBlock2.png", true, false, false);
+		//object3 = new TestObject("test2", -10, 95, "/testStageBlock2.png", false, false, true);
 		platform = new TestObject("platform", -100, 100, "/fonts/zapfino.png", false, false, true);
 		object.setVelX(1);
 		object2.setVelX(-2);
+		//object3.elasticity = 0;
 		platform.elasticity = 0.7;
 		//*/
 		
@@ -108,7 +109,7 @@ public class GameManager extends AbstractGame implements Constants {
 		object2.setVelX(-1);
 		//*/
 		
-		//camera.setTarget("test");
+		//camera.setTarget("test1");
 	}
 	
 	@Override
