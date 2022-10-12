@@ -106,12 +106,14 @@ public class CollisionDetector implements Updateable, Constants {
 							dir = adjustPosition(po1, false, po2, true);	//the last direction found will be the direction of the collision, unless a collision with another fixation 1 object is found
 							po1.setFixation(f+1);
 							collisionFound = true;
+							if (dir == "x") po1.collidedX = po2;
+							if (dir == "y") po1.collidedY = po2;
 						}
 					}
 					
 				}
-				if (dir == "x") {po1.collidedX = true; numFixedCollides++;}
-				if (dir == "y") {po1.collidedY = true; numFixedCollides++;}
+				if (dir == "x") {numFixedCollides++;}
+				if (dir == "y") {numFixedCollides++;}
 			}
 			
 			//2. clear all objects that are fixation 1 from each other
@@ -128,8 +130,8 @@ public class CollisionDetector implements Updateable, Constants {
 						if (po2.getFixation() == f+1 && checkCollision(po1, po2)) {
 							dir = adjustPosition(po1, false, po2, true);	//the last direction found will be the direction of the collision, unless a collision with another fixation 1 object is found
 							collisionFound = true;
-							if (dir == "x") {po1.collidedX = true; po2.collidedX = true;}
-							if (dir == "y") {po1.collidedY = true; po2.collidedY = true;}
+							if (dir == "x") {po1.collidedX = po2; po2.collidedX = po1;}
+							if (dir == "y") {po1.collidedY = po2; po2.collidedY = po1;}
 						}
 					}
 					
@@ -138,10 +140,10 @@ public class CollisionDetector implements Updateable, Constants {
 			//use the collidedX and collidedY values to set speeds to 0, reset collidedX and collidedY, momentumObjects will change this
 			for (PhysicalObject po : pos) {
 				if (po.getFixation() == f+1) {
-					if (po.collidedX) po.setVelX(0);
-					if (po.collidedY) po.setVelY(0);
-					po.collidedX = false;
-					po.collidedY = false;
+					if (po.collidedX != null) addCollisionEffect(po, po.collidedX, "x");
+					if (po.collidedY != null) addCollisionEffect(po, po.collidedY, "y");
+					po.collidedX = null;
+					po.collidedY = null;
 				}
 			}
 			
@@ -255,8 +257,11 @@ public class CollisionDetector implements Updateable, Constants {
 			double v1f = (2*v2i + (m1/m2 - 1)*v1i) / (1 + m1/m2);
 			double v2f = (2*v1i + (m2/m1 - 1)*v2i) / (1 + m2/m1);
 			
-			if (fix1) {v2f = 2*v1i - v2i; v1f = 0; return;}
-			if (fix2) {v1f = 2*v2i - v1i; v2f = 0; return;}
+			if (fix1) {v2f = 2*v1i - v2i; v1f = 0;}
+			if (fix2) {v1f = 2*v2i - v1i; v2f = 0;}
+			
+			if (Math.abs(v1f) < MIN_BOUNCE_VEL) v1f = 0;
+			if (Math.abs(v2f) < MIN_BOUNCE_VEL) v2f = 0;
 			
 			p1.setVelX(v1f*e);
 			p2.setVelX(v2f*e);
@@ -272,8 +277,11 @@ public class CollisionDetector implements Updateable, Constants {
 			double v1f = (2*v2i + (m1/m2 - 1)*v1i) / (1 + m1/m2);
 			double v2f = (2*v1i + (m2/m1 - 1)*v2i) / (1 + m2/m1);
 			
-			if (fix1) {v2f = 2*v1i - v2i; v1f = 0; return;}
-			if (fix2) {v1f = 2*v2i - v1i; v2f = 0; return;}
+			if (fix1) {v2f = 2*v1i - v2i; v1f = 0;}
+			if (fix2) {v1f = 2*v2i - v1i; v2f = 0;}
+			
+			if (Math.abs(v1f) < MIN_BOUNCE_VEL) v1f = 0;
+			if (Math.abs(v2f) < MIN_BOUNCE_VEL) v2f = 0;
 			
 			p1.setVelY(v1f*e);
 			p2.setVelY(v2f*e);
