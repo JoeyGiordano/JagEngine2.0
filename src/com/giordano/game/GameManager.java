@@ -42,7 +42,7 @@ public class GameManager extends AbstractGame implements Constants {
 		//object3 = new TestObject("test1", -10, 0, "/testStageBlock2.png", true, false, false);
 		platform = new TestObject("platform", -100, 100, "/fonts/zapfino.png", false, false, true);
 		object.setVelX(1);
-		object2.setVelX(-1);
+		object2.setVelX(-2);
 		platform.elasticity = 0.7;
 		//*/
 		

@@ -237,8 +237,8 @@ public class CollisionDetector implements Updateable, Constants {
 			PhysicalObject po1 = collisionEffects.get(i)[0];
 			PhysicalObject po2 = collisionEffects.get(i)[1];
 			String dir = collisionEffectDirs.get(i);
-			boolean fix1 = po1.getFixation() == -1 || po1.getFixation() != po2.getFixation();
-			boolean fix2 = po2.getFixation() == -1 || po1.getFixation() != po2.getFixation();
+			boolean fix1 = po1.getFixation() == 0;
+			boolean fix2 = po2.getFixation() == 0;
 			bounce(po1, fix1, po2, fix2, dir);
 			//friction();
 		}
@@ -303,21 +303,6 @@ public class CollisionDetector implements Updateable, Constants {
 		
 		double[] v1 = po1.getVelocityVector();
 		double[] v2 = po2.getVelocityVector();
-		
-		//SPECIAL CASE: falling object collides horizontally with sliding object
-		//because the falling object would have to correct in the direction of motion it would have to move upwards
-		//even though it should be pushed horizontally
-		/*if (fix1 &&
-				v1[1] == 0 && (isBetween(po1.posY, po2.posY, po1.posY + po1.height) || isBetween(po2.posY, po1.posY, po2.posY + po2.height))
-				&& getCollisionDirection(po1, po2) == "x" ) {
-			System.out.println("here");
-			v2 = new double[] {-1 * v1[0], 0};
-		}
-		if (fix2 && v2[1] == 0 && (isBetween(po1.posY, po2.posY, po1.posY + po1.height) || isBetween(po2.posY, po1.posY, po2.posY + po2.height))
-				&& getCollisionDirection(po1, po2) == "x" ) {
-			System.out.println("here");
-			v1 = new double[] {-1 * v2[0], 0};
-		}*/
 		
 		//Account for fixed objects
 		if (fix1 && po1.fixedX) {v1 = new double[] {0,v1[1]};}
@@ -454,78 +439,6 @@ public class CollisionDetector implements Updateable, Constants {
 	public boolean isBetween(double lower, double between, double upper) {
 		if (lower <= between && between <= upper) return true;
 		return false;
-	}
-	
-	public String getQuadrant(double[] v) {
-		if (v.length != 2) return "v is not a 2d vector";
-		//point case
-		if (v[0] == 0 && v[1] == 0) return "v is the 0 vector";
-		//axis cases
-		if (v[0] == 0) return "y";
-		if (v[1] == 0) return "x";
-		//quadrant cases
-		if (v[0] > 0) {
-			if (v[1] > 0) return "I";
-			else return "IV";
-		} else {
-			if (v[1] > 0) return "II";
-			else return "III";
-		}
-	}
-	
-	private String getCollisionDirection(PhysicalObject po1, PhysicalObject po2) {
-		//very similar to adjust but must be slightly different, doesn't change position, doesn't fix objects
-		if (!checkCollision(po1, po2)) return "alreadyResolved";
-		
-		double[] v1 = po1.getVelocityVector();
-		double[] v2 = po2.getVelocityVector();
-		
-		double po1x = po1.getPosX(), po1y = po1.getPosY(), po2x = po2.getPosX(), po2y = po2.getPosY();
-		
-		//move it back in the direction of motion until its no longer colliding
-		while (checkCollision(po1, po2)) {
-			po1.changePosXYBy(-0.1 * v1[0], -0.1 * v1[1]);
-			po2.changePosXYBy(-0.1 * v2[0], -0.1 * v2[1]);
-		}
-		//move it forward in the direction of motion until its colliding again
-		while (!checkCollision(po1, po2)) {
-			po1.changePosXYBy(0.01 * v1[0], 0.01 * v1[1]);
-			po2.changePosXYBy(0.01 * v2[0], 0.01 * v2[1]);
-		}
-		//move it backward in the direction of motion until its no longer colliding
-		while (checkCollision(po1, po2)) {
-			po1.changePosXYBy(-0.001 * v1[0], -0.001 * v1[1]);
-			po2.changePosXYBy(-0.001 * v2[0], -0.001 * v2[1]);
-		}
-		
-		//check to see which direction the collision was actually in
-		boolean inX, inY;
-		po1.changePosXBy(v1[0] * 0.001);
-		po2.changePosXBy(v2[0] * 0.001);
-		inX = checkCollision(po1, po2);
-		po1.changePosXBy(v1[0] * -0.001);
-		po2.changePosXBy(v2[0] * -0.001);
-		
-		po1.changePosYBy(v1[1] * 0.001);
-		po2.changePosYBy(v2[1] * 0.001);
-		inY = checkCollision(po1, po2);
-		po1.changePosYBy(v1[1] * -0.001);
-		po2.changePosYBy(v2[1] * -0.001);
-		
-		//move the object back to its original position
-		po1.setPosX(po1x);
-		po1.setPosY(po1y);
-		po2.setPosX(po2x);
-		po2.setPosY(po2y);
-		
-		if (!inX && !inY) {
-			System.out.println("Corner Collision Occured");
-			inY = true;
-		}
-		if (inX) return "x";
-		if (inY) return "y";
-		System.out.println("Contradicting collision: direction not found");
-		return "";
 	}
 	
 	private void addCollisionEffect(PhysicalObject po1, PhysicalObject po2, String dir) {
