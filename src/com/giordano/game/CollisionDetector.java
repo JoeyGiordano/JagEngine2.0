@@ -234,9 +234,30 @@ public class CollisionDetector implements Updateable, Constants {
 	
 	private void executeCollisionEffects() {
 		for (int i = 0; i < collisionEffects.size(); i++) {
+			PhysicalObject[] p = collisionEffects.get(i);
+			String dir = collisionEffectDirs.get(i);
+			for (int j = 0; j < collisionEffects.size(); j++) {
+				if (i == j) continue;
+				if (dir != collisionEffectDirs.get(j)) continue;
+				if (p[0] == collisionEffects.get(j)[0] && p[1] == collisionEffects.get(j)[1] || 
+						p[1] == collisionEffects.get(j)[0] && p[0] == collisionEffects.get(j)[1]) {
+					collisionEffects.remove(j);
+					collisionEffectDirs.remove(j);
+				}
+				if (j < i) i--;
+			}
+		}
+		
+		for (int i = 0; i < collisionEffects.size(); i++) {
 			PhysicalObject po1 = collisionEffects.get(i)[0];
 			PhysicalObject po2 = collisionEffects.get(i)[1];
 			String dir = collisionEffectDirs.get(i);
+			if (po1.getTag() == "test" && po2.getTag() == "test2") {
+				System.out.println("Here");
+			}
+			if (po1.getTag() == "test2" && po2.getTag() == "test") {
+				System.out.println("Here");
+			}
 			boolean fix1 = po1.getFixation() == 0;
 			boolean fix2 = po2.getFixation() == 0;
 			bounce(po1, fix1, po2, fix2, dir);
