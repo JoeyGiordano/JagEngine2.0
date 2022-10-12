@@ -6,6 +6,9 @@ import com.giordano.engine.Updateable;
 
 public class CollisionDetector implements Updateable, Constants {
 	
+	private ArrayList<PhysicalObject[]> collisionEffects = new ArrayList<PhysicalObject[]>();
+	private ArrayList<String> collisionEffectDirs = new ArrayList<String>();
+	
 	public CollisionDetector() {
 		updateables.add(this);
 	}
@@ -19,6 +22,7 @@ public class CollisionDetector implements Updateable, Constants {
 	public void update() {
 		detectCollisions();
 		resolvePhysicalCollisions();
+		executeCollisionEffects();
  	}
 	
 	private void detectCollisions() {
@@ -141,20 +145,21 @@ public class CollisionDetector implements Updateable, Constants {
 				}
 			}
 			
-			//TODO add check for things that are moving really fast
 			//3. increase fixation and repeat
 			f++;
 		}
 		
 		//4. resolve collisions between non fixed objects
-		//TODO
 		for (PhysicalObject po1 : pos) {
 			if (po1.getFixation() != -1 || po1.isTransparent()) continue;
 			for (PhysicalObject po2 : pos) {
 				if (po2.getFixation() != -1 || po1 == po2 || po2.isTransparent()) continue;
 				String dir = adjustPosition(po1, false, po2, false);
-				if (dir == "x") {po1.setVelX(0); po2.setVelX(0);}
-				if (dir == "y") {po1.setVelY(0); po2.setVelY(0);}
+				//if (dir == "x") {po1.setVelX(0); po2.setVelX(0);}
+				//if (dir == "y") {po1.setVelY(0); po2.setVelY(0);}
+				if (dir != "alreadyResolved") {
+					addCollisionEffect(po1, po2, dir);
+				}
 			}
 		}
 		
@@ -220,6 +225,65 @@ public class CollisionDetector implements Updateable, Constants {
 			//po2.setPosXY();
 			return "y";
 		}
+		
+	}*/
+	
+	private void executeCollisionEffects() {
+		for (int i = 0; i < collisionEffects.size(); i++) {
+			PhysicalObject po1 = collisionEffects.get(i)[0];
+			PhysicalObject po2 = collisionEffects.get(i)[1];
+			String dir = collisionEffectDirs.get(i);
+			boolean fix1 = po1.getFixation() != -1 || po1.getFixation() != po2.getFixation();
+			boolean fix2 = po2.getFixation() != -1 || po1.getFixation() != po2.getFixation();
+			bounce(po1, fix1, po2, fix2, dir);
+		}
+		collisionEffects.clear();
+		collisionEffectDirs.clear();
+	}
+	
+	private void bounce(PhysicalObject p1, boolean fix1, PhysicalObject p2, boolean fix2, String dir) {
+		
+		double m1 = p1.getMass();
+		double m2 = p2.getMass();
+		double e = p1.getElasticity() * p2.getElasticity();
+		
+		if (dir == "x") {
+			
+			double v1i = p1.getVelX();
+			double v2i = p2.getVelX();
+			
+			double v1f = (2*v2i + (m1/m2 - 1)*v1i) / (1 + m1/m2);
+			double v2f = (2*v1i + (m2/m1 - 1)*v2i) / (1 + m2/m1);
+			
+			if (fix1) {v2f = 2*v1i - v2i; v1f = 0; return;}
+			if (fix2) {v1f = 2*v2i - v1i; v2f = 0; return;}
+			
+			p1.setVelX(v1f*e);
+			p2.setVelX(v2f*e);
+			
+			return;
+		}
+		
+		if (dir == "y") {
+			
+			double v1i = p1.getVelY();
+			double v2i = p2.getVelY();
+			
+			double v1f = (2*v2i + (m1/m2 - 1)*v1i) / (1 + m1/m2);
+			double v2f = (2*v1i + (m2/m1 - 1)*v2i) / (1 + m2/m1);
+			
+			if (fix1) {v2f = 2*v1i - v2i; v1f = 0; return;}
+			if (fix2) {v1f = 2*v2i - v1i; v2f = 0; return;}
+			
+			p1.setVelY(v1f*e);
+			p2.setVelY(v2f*e);
+			
+		}
+		
+	}
+	
+	/* to be implemented later
+	private void executeFriction() {
 		
 	}*/
 	
@@ -375,6 +439,11 @@ public class CollisionDetector implements Updateable, Constants {
 			if (v[1] > 0) return "II";
 			else return "III";
 		}
+	}
+	
+	private void addCollisionEffect(PhysicalObject po1, PhysicalObject po2, String dir) {
+		collisionEffects.add(new PhysicalObject[] {po1, po2});
+		collisionEffectDirs.add(dir);
 	}
 	
 }

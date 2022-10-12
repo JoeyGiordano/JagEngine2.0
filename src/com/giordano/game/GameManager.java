@@ -9,10 +9,12 @@ public class GameManager extends AbstractGame implements Constants {
 	//if using eclipse make sure to add the resources folder to the build path (right-click res folder -> Build Path -> Use as source folder
 	TestObject object, object2, object3, object4, platform;
 	
+	//spawn collisions
+	
 	@Override
 	public void init(GameContainer gc) {
 		//all
-		//*
+		/*
 		object = new TestObject("test", 0, 0, "/testStageBlock.png", true, false, false);
 		object2 = new TestObject("test1", 110, 90, "/testStageBlock2.png", true, false, false);
 		object3 = new TestObject("test2", -90, 90, "/testStageBlock2.png", true, false, false);
@@ -68,7 +70,7 @@ public class GameManager extends AbstractGame implements Constants {
 		//*/
 		
 		//left right collision
-		/*
+		//*
 		object = new TestObject("test", 0, 90, "/testStageBlock.png", false, false, false);
 		object2 = new TestObject("test1", 90, 90, "/testStageBlock2.png", false, false, false);
 		object.setVelX(1);

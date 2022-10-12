@@ -4,16 +4,20 @@ import com.giordano.engine.GameContainer;
 
 public abstract class PhysicalObject extends ImageObject {
 	
-	private boolean useGravity, transparent, fixed;
-	private double velX, velY;
+	protected boolean useGravity, transparent, fixed;
+	protected double velX, velY;
 	private int fixation;
 	public boolean collidedX = false, collidedY = false;
+	protected double mass;
+	protected double elasticity;
 	
 	public PhysicalObject(String tag, double posX, double posY, String defaultImagePath, boolean useGravity, boolean transparent, boolean fixed) {
 		super(tag, posX, posY, defaultImagePath);
 		this.useGravity = useGravity;
 		this.transparent = transparent;
 		this.fixed = fixed;
+		mass = 1;
+		elasticity = 0.7;
 	}
 	
 	public void update(GameContainer gc, GameManager gm, float dt) {
@@ -82,5 +86,16 @@ public abstract class PhysicalObject extends ImageObject {
 	public double[] getVelocityVector() {
 		return new double[] {velX, velY};
 	}
-	
+	public double getMass() {
+		return mass;
+	}
+	public void setMass(double mass) {
+		this.mass = mass;
+	}
+	public double getElasticity() {
+		return elasticity;
+	}
+	public void setElasticity(double elasticity) {
+		this.elasticity = elasticity;
+	}
 }
