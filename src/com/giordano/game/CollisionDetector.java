@@ -73,6 +73,8 @@ public class CollisionDetector implements Updateable, Constants {
 			pos.add((PhysicalObject)go);
 			if (((PhysicalObject)go).isFixed()) {
 				((PhysicalObject)go).setFixation(0);
+				((PhysicalObject)go).fixedX = false;
+				((PhysicalObject)go).fixedY = false;
 			} else {
 				((PhysicalObject)go).setFixation(-1);
 			}
@@ -106,8 +108,8 @@ public class CollisionDetector implements Updateable, Constants {
 							dir = adjustPosition(po1, false, po2, true);	//the last direction found will be the direction of the collision, unless a collision with another fixation 1 object is found
 							po1.setFixation(f+1);
 							collisionFound = true;
-							if (dir == "x") po1.collidedX = po2;
-							if (dir == "y") po1.collidedY = po2;
+							if (dir == "x") {po1.collidedX = po2; po1.fixedX = true;}
+							if (dir == "y") {po1.collidedY = po2; po1.fixedY = true;}
 						}
 					}
 					
@@ -140,8 +142,8 @@ public class CollisionDetector implements Updateable, Constants {
 			//use the collidedX and collidedY values to set speeds to 0, reset collidedX and collidedY, momentumObjects will change this
 			for (PhysicalObject po : pos) {
 				if (po.getFixation() == f+1) {
-					if (po.collidedX != null) addCollisionEffect(po, po.collidedX, "x");
-					if (po.collidedY != null) addCollisionEffect(po, po.collidedY, "y");
+					if (po.collidedX != null) {addCollisionEffect(po, po.collidedX, "x");}
+					if (po.collidedY != null) {addCollisionEffect(po, po.collidedY, "y");}
 					po.collidedX = null;
 					po.collidedY = null;
 				}
@@ -238,6 +240,7 @@ public class CollisionDetector implements Updateable, Constants {
 			boolean fix1 = po1.getFixation() != -1 || po1.getFixation() != po2.getFixation();
 			boolean fix2 = po2.getFixation() != -1 || po1.getFixation() != po2.getFixation();
 			bounce(po1, fix1, po2, fix2, dir);
+			//friction();
 		}
 		collisionEffects.clear();
 		collisionEffectDirs.clear();
@@ -291,7 +294,7 @@ public class CollisionDetector implements Updateable, Constants {
 	}
 	
 	/* to be implemented later
-	private void executeFriction() {
+	private void friction() {
 		
 	}*/
 	
@@ -301,8 +304,28 @@ public class CollisionDetector implements Updateable, Constants {
 		double[] v1 = po1.getVelocityVector();
 		double[] v2 = po2.getVelocityVector();
 		
-		if (fix1) {v1 = new double[] {0,0};}
-		if (fix2) {v2 = new double[] {0,0};}
+		//SPECIAL CASE: falling object collides horizontally with sliding object
+		//because the falling object would have to correct in the direction of motion it would have to move upwards
+		//even though it should be pushed horizontally
+		/*if (fix1 &&
+				v1[1] == 0 && (isBetween(po1.posY, po2.posY, po1.posY + po1.height) || isBetween(po2.posY, po1.posY, po2.posY + po2.height))
+				&& getCollisionDirection(po1, po2) == "x" ) {
+			System.out.println("here");
+			v2 = new double[] {-1 * v1[0], 0};
+		}
+		if (fix2 && v2[1] == 0 && (isBetween(po1.posY, po2.posY, po1.posY + po1.height) || isBetween(po2.posY, po1.posY, po2.posY + po2.height))
+				&& getCollisionDirection(po1, po2) == "x" ) {
+			System.out.println("here");
+			v1 = new double[] {-1 * v2[0], 0};
+		}*/
+		
+		//Account for fixed objects
+		if (fix1 && po1.fixedX) {v1 = new double[] {0,v1[1]};}
+		if (fix1 && po1.fixedY) {v1 = new double[] {v1[0],0};}
+		if (fix1 && po1.fixedX && po1.fixedY) {v1 = new double[] {0,0};}
+		if (fix2 && po2.fixedX) {v2 = new double[] {0,v2[1]};}
+		if (fix2 && po2.fixedY) {v2 = new double[] {v2[0],0};}
+		if (fix2 && po2.fixedX && po2.fixedY) {v2 = new double[] {0,0};}
 		
 		double dx1=0, dy1=0, dx2=0, dy2=0;
 		
@@ -333,6 +356,7 @@ public class CollisionDetector implements Updateable, Constants {
 			dx2 += -0.001 * v2[0];
 			dy2 += -0.001 * v2[1];
 		}
+		
 		//check to see which direction the collision was actually in
 		boolean inX, inY;
 		po1.changePosXBy(v1[0] * 0.001);
@@ -447,6 +471,61 @@ public class CollisionDetector implements Updateable, Constants {
 			if (v[1] > 0) return "II";
 			else return "III";
 		}
+	}
+	
+	private String getCollisionDirection(PhysicalObject po1, PhysicalObject po2) {
+		//very similar to adjust but must be slightly different, doesn't change position, doesn't fix objects
+		if (!checkCollision(po1, po2)) return "alreadyResolved";
+		
+		double[] v1 = po1.getVelocityVector();
+		double[] v2 = po2.getVelocityVector();
+		
+		double po1x = po1.getPosX(), po1y = po1.getPosY(), po2x = po2.getPosX(), po2y = po2.getPosY();
+		
+		//move it back in the direction of motion until its no longer colliding
+		while (checkCollision(po1, po2)) {
+			po1.changePosXYBy(-0.1 * v1[0], -0.1 * v1[1]);
+			po2.changePosXYBy(-0.1 * v2[0], -0.1 * v2[1]);
+		}
+		//move it forward in the direction of motion until its colliding again
+		while (!checkCollision(po1, po2)) {
+			po1.changePosXYBy(0.01 * v1[0], 0.01 * v1[1]);
+			po2.changePosXYBy(0.01 * v2[0], 0.01 * v2[1]);
+		}
+		//move it backward in the direction of motion until its no longer colliding
+		while (checkCollision(po1, po2)) {
+			po1.changePosXYBy(-0.001 * v1[0], -0.001 * v1[1]);
+			po2.changePosXYBy(-0.001 * v2[0], -0.001 * v2[1]);
+		}
+		
+		//check to see which direction the collision was actually in
+		boolean inX, inY;
+		po1.changePosXBy(v1[0] * 0.001);
+		po2.changePosXBy(v2[0] * 0.001);
+		inX = checkCollision(po1, po2);
+		po1.changePosXBy(v1[0] * -0.001);
+		po2.changePosXBy(v2[0] * -0.001);
+		
+		po1.changePosYBy(v1[1] * 0.001);
+		po2.changePosYBy(v2[1] * 0.001);
+		inY = checkCollision(po1, po2);
+		po1.changePosYBy(v1[1] * -0.001);
+		po2.changePosYBy(v2[1] * -0.001);
+		
+		//move the object back to its original position
+		po1.setPosX(po1x);
+		po1.setPosY(po1y);
+		po2.setPosX(po2x);
+		po2.setPosY(po2y);
+		
+		if (!inX && !inY) {
+			System.out.println("Corner Collision Occured");
+			inY = true;
+		}
+		if (inX) return "x";
+		if (inY) return "y";
+		System.out.println("Contradicting collision: direction not found");
+		return "";
 	}
 	
 	private void addCollisionEffect(PhysicalObject po1, PhysicalObject po2, String dir) {

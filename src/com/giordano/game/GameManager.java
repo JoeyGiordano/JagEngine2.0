@@ -24,15 +24,26 @@ public class GameManager extends AbstractGame implements Constants {
 		object3.setVelXY(2, -2);
 		//*/
 		
-		//sliding left right collision
+		//all
 		//*
-		object = new TestObject("test", 0, 50, "/testStageBlock.png", true, false, false);
-		object2 = new TestObject("test1", 27, 80, "/testStageBlock2.png", true, false, false);
+		object = new TestObject("test", -90, 90, "/testStageBlock.png", true, false, false);
+		object2 = new TestObject("test1", 90, 90, "/testStageBlock2.png", true, false, false);
+		//object3 = new TestObject("test2", -90, 90, "/testStageBlock2.png", true, false, false);
+		platform = new TestObject("platform", -100, 100, "/fonts/zapfino.png", false, false, true);
+		object.setVelXY(2, 0);
+		object2.setVelXY(-1, -3);
+		//object3.setVelXY(2, -2);
+		//*/
+		
+		//sliding left right collision
+		/*
+		object = new TestObject("test", 0, 90, "/testStageBlock.png", true, false, false);
+		object2 = new TestObject("test1", 90, 80, "/testStageBlock2.png", true, false, false);
 		//object3 = new TestObject("test1", -10, 0, "/testStageBlock2.png", true, false, false);
 		platform = new TestObject("platform", -100, 100, "/fonts/zapfino.png", false, false, true);
-		object.setVelX(0);
-		object2.setVelX(-0.7);
-		platform.elasticity = 0;
+		object.setVelX(1);
+		object2.setVelX(-1);
+		platform.elasticity = 0.7;
 		//*/
 		
 		//vertical squish different speeds

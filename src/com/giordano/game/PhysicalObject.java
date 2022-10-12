@@ -7,6 +7,7 @@ public abstract class PhysicalObject extends ImageObject {
 	protected boolean useGravity, transparent, fixed;
 	protected double velX, velY;
 	private int fixation;
+	public boolean fixedX = false, fixedY = false;
 	public PhysicalObject collidedX = null, collidedY = null;
 	protected double mass;
 	protected double elasticity;
