@@ -237,8 +237,8 @@ public class CollisionDetector implements Updateable, Constants {
 			PhysicalObject po1 = collisionEffects.get(i)[0];
 			PhysicalObject po2 = collisionEffects.get(i)[1];
 			String dir = collisionEffectDirs.get(i);
-			boolean fix1 = po1.getFixation() != -1 || po1.getFixation() != po2.getFixation();
-			boolean fix2 = po2.getFixation() != -1 || po1.getFixation() != po2.getFixation();
+			boolean fix1 = po1.getFixation() == -1 || po1.getFixation() != po2.getFixation();
+			boolean fix2 = po2.getFixation() == -1 || po1.getFixation() != po2.getFixation();
 			bounce(po1, fix1, po2, fix2, dir);
 			//friction();
 		}

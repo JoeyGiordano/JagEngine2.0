@@ -6,11 +6,14 @@ public abstract class PhysicalObject extends ImageObject {
 	
 	protected boolean useGravity, transparent, fixed;
 	protected double velX, velY;
+	protected double mass;
+	protected double elasticity;
+	
+	//for the collision detector
 	private int fixation;
 	public boolean fixedX = false, fixedY = false;
 	public PhysicalObject collidedX = null, collidedY = null;
-	protected double mass;
-	protected double elasticity;
+	
 	
 	public PhysicalObject(String tag, double posX, double posY, String defaultImagePath, boolean useGravity, boolean transparent, boolean fixed) {
 		super(tag, posX, posY, defaultImagePath);
