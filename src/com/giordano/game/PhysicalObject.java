@@ -15,6 +15,16 @@ public abstract class PhysicalObject extends ImageObject {
 	public PhysicalObject collidedX = null, collidedY = null;
 	
 	
+	public PhysicalObject(String tag, double posX, double posY, String defaultImagePath, boolean useGravity, boolean transparent, boolean fixed, double mass, double elasticity, double friction) {
+		super(tag, posX, posY, defaultImagePath);
+		this.useGravity = useGravity;
+		this.transparent = transparent;
+		this.fixed = fixed;
+		this.mass = mass;
+		this.elasticity = elasticity;
+		this.friction = friction;
+	}
+	
 	public PhysicalObject(String tag, double posX, double posY, String defaultImagePath, boolean useGravity, boolean transparent, boolean fixed) {
 		super(tag, posX, posY, defaultImagePath);
 		this.useGravity = useGravity;
@@ -22,7 +32,7 @@ public abstract class PhysicalObject extends ImageObject {
 		this.fixed = fixed;
 		mass = 1;
 		elasticity = 0.7;
-		friction = 0.3;
+		friction = 0.1;
 	}
 	
 	public void update(GameContainer gc, GameManager gm, float dt) {

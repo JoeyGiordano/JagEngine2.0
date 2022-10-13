@@ -387,6 +387,8 @@ public class CollisionDetector implements Updateable, Constants {
 		if (fix2 && po2.fixedY) {v2 = new double[] {v2[0],0};}
 		if (fix2 && po2.fixedX && po2.fixedY) {v2 = new double[] {0,0};}
 		
+		if (v1[0] == 0 && v1[1] == 0 && v2[0] == 0 && v2[1] == 0) {System.out.println("Cramping: two zero velocities in adjust position"); return "";}
+		
 		double dx1=0, dy1=0, dx2=0, dy2=0;
 		
 		//move it back in the direction of motion until its no longer colliding
