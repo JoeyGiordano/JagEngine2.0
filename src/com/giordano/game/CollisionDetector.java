@@ -256,7 +256,7 @@ public class CollisionDetector implements Updateable, Constants {
 			boolean fix1 = po1.getFixation() == 0;
 			boolean fix2 = po2.getFixation() == 0;
 			bounce(po1, fix1, po2, fix2, dir);
-			friction(po1, po2, dir);
+			friction(po1, fix1, po2, fix2, dir);
 		}
 		collisionEffects.clear();
 		collisionEffectDirs.clear();
@@ -309,19 +309,68 @@ public class CollisionDetector implements Updateable, Constants {
 		
 	}
 	
-	private void friction(PhysicalObject p1, PhysicalObject p2, String dir) {
-		double m1 = p1.getMass();
-		double m2 = p2.getMass();
+	private void friction(PhysicalObject p1, boolean fix1, PhysicalObject p2, boolean fix2, String dir) {
 		double f = p1.getFriction() * p2.getFriction();
 		
 		if (dir == "x") {
-			p1.velY *= 1-f;
-			p2.velY *= 1-f;
+			if (!fix1) p1.velY *= 1-f;
+			if (!fix2) p2.velY *= 1-f;
 		}
 		if (dir == "y") {
-			p1.velX *= 1-f;
-			p2.velX *= 1-f;
+			if (!fix1) p1.velX *= 1-f;
+			if (!fix2) p2.velX *= 1-f;
 		}
+	}
+	
+	public void fixChangeSizeCollision(PhysicalObject po1) {
+		
+		double maxColUp=0, maxColDown=0, maxColLeft=0, maxColRight=0;
+		
+		for (GameObject go : gm.getObjects()) {
+			if (!(go instanceof PhysicalObject)) continue;
+			PhysicalObject po2 = (PhysicalObject)go;
+			if (po2 == po1) continue;
+			if (!checkCollision(po1, po2)) continue;
+			
+			//positive values indicate overlap
+			double upOverlap = po2.posY + po2.height - po1.posY;
+			double downOverlap = po1.posY + po1.height - po2.posY;
+			double leftOverlap = po2.posX + po2.width - po1.posX;
+			double rightOverlap = po1.posX + po1.width - po2.posX;
+			
+			//if the overlap is <= to 0 set it to max so we can get the min overlap
+			if (upOverlap <= 0) upOverlap = Double.MAX_VALUE;
+			if (downOverlap <= 0) downOverlap = Double.MAX_VALUE;
+			if (leftOverlap <= 0) leftOverlap = Double.MAX_VALUE;
+			if (rightOverlap <= 0) rightOverlap = Double.MAX_VALUE;
+			
+			//find the smallest overlap
+			double smallestOverlap = Math.min(upOverlap, Math.min(downOverlap, Math.min(leftOverlap, rightOverlap)));
+			if (smallestOverlap == Double.MAX_VALUE) continue;
+			
+			//whatever the smallest overlap is, if it is bigger than any other overlaps in that direction
+			//change the max overlap in that direction to what ever that smallest overlap was
+			if (upOverlap == smallestOverlap && maxColUp < upOverlap) maxColUp = upOverlap;
+			if (downOverlap == smallestOverlap && maxColDown < downOverlap) maxColDown = downOverlap;
+			if (leftOverlap == smallestOverlap && maxColLeft < leftOverlap) maxColLeft = leftOverlap;
+			if (rightOverlap == smallestOverlap && maxColRight < rightOverlap) maxColRight = rightOverlap;
+			
+		}
+		
+		//check for cramping
+		if (maxColUp > 0 && maxColDown > 0) {
+			if (po1.velY == 0) po1.velY = -0.5;
+			System.out.println("Size change cramping in y on " + po1.getTag());
+		}
+		if (maxColLeft > 0 && maxColRight > 0) {
+			if (po1.velX == 0) po1.velX = 0.5;
+			System.out.println("Size change cramping in x on " + po1.getTag());
+		}
+		
+		//adjust position
+		po1.posY += (maxColUp * 1.00000001) - (maxColDown * 1.00000001);
+		po1.posX += (maxColLeft * 1.00000001) - (maxColRight * 1.00000001);
+		
 	}
 	
 	private String adjustPosition(PhysicalObject po1, boolean fix1, PhysicalObject po2, boolean fix2) {

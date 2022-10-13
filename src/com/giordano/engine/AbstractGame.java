@@ -10,7 +10,7 @@ import com.giordano.game.GameObject;
 public abstract class AbstractGame implements Constants {
 	
 	protected ArrayList<GameObject> objects = new ArrayList<GameObject>();
-	protected CollisionDetector cd = new CollisionDetector();
+	public CollisionDetector cd = new CollisionDetector();
 	
 	public AbstractGame() {
 		

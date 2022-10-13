@@ -36,6 +36,20 @@ public abstract class PhysicalObject extends ImageObject {
 		posY += velY;
 	}
 	
+	@Override
+	public void changeSize(int newWidth, int newHeight, double scaleFromX, double scaleFromY) {
+		//cramping prevention
+		//also I didn't test this very thoroughly so if you get a bug here then... but I'm like 90% sure it'll work
+		//if anywhere you'll get a bug in the gm.cd method but you won't be able to tell where it is coming from
+		//just generally try to avoid changing image sizes
+		//also you might get a little positive velocity if you try to make an image bigger and it cramps 
+		int oldWidth = width, oldHeight = height;
+		super.changeSize(newWidth, newHeight, scaleFromX, scaleFromY);
+		if (newWidth > oldWidth || newHeight > oldHeight) {
+			gm.cd.fixChangeSizeCollision(this);
+		}
+	}
+	
 	public boolean isUseGravity() {
 		return useGravity;
 	}

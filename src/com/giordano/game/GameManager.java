@@ -7,12 +7,11 @@ import com.giordano.engine.gfx.Image;
 
 public class GameManager extends AbstractGame implements Constants {
 	//if using eclipse make sure to add the resources folder to the build path (right-click res folder -> Build Path -> Use as source folder
-	TestObject object, object2, object3, object4, platform;
-	
-	//spawn collisions
+	TestObject object, object2, object3, object4, platform, red;
 	
 	@Override
 	public void init(GameContainer gc) {
+		
 		//all
 		//*
 		object = new TestObject("test", 0, 0, "/testStageBlock.png", true, false, false);
