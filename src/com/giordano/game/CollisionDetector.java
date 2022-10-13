@@ -6,6 +6,9 @@ import com.giordano.engine.Updateable;
 
 public class CollisionDetector implements Updateable, Constants {
 	
+	private ArrayList<PhysicalObject[]> collisionEffects = new ArrayList<PhysicalObject[]>();
+	private ArrayList<String> collisionEffectDirs = new ArrayList<String>();
+	
 	public CollisionDetector() {
 		updateables.add(this);
 	}
@@ -19,6 +22,7 @@ public class CollisionDetector implements Updateable, Constants {
 	public void update() {
 		detectCollisions();
 		resolvePhysicalCollisions();
+		executeCollisionEffects();
  	}
 	
 	private void detectCollisions() {
@@ -69,6 +73,8 @@ public class CollisionDetector implements Updateable, Constants {
 			pos.add((PhysicalObject)go);
 			if (((PhysicalObject)go).isFixed()) {
 				((PhysicalObject)go).setFixation(0);
+				((PhysicalObject)go).fixedX = false;
+				((PhysicalObject)go).fixedY = false;
 			} else {
 				((PhysicalObject)go).setFixation(-1);
 			}
@@ -102,12 +108,14 @@ public class CollisionDetector implements Updateable, Constants {
 							dir = adjustPosition(po1, false, po2, true);	//the last direction found will be the direction of the collision, unless a collision with another fixation 1 object is found
 							po1.setFixation(f+1);
 							collisionFound = true;
+							if (dir == "x") {po1.collidedX = po2; po1.fixedX = true;}
+							if (dir == "y") {po1.collidedY = po2; po1.fixedY = true;}
 						}
 					}
 					
 				}
-				if (dir == "x") {po1.collidedX = true; numFixedCollides++;}
-				if (dir == "y") {po1.collidedY = true; numFixedCollides++;}
+				if (dir == "x") {numFixedCollides++;}
+				if (dir == "y") {numFixedCollides++;}
 			}
 			
 			//2. clear all objects that are fixation 1 from each other
@@ -124,8 +132,8 @@ public class CollisionDetector implements Updateable, Constants {
 						if (po2.getFixation() == f+1 && checkCollision(po1, po2)) {
 							dir = adjustPosition(po1, false, po2, true);	//the last direction found will be the direction of the collision, unless a collision with another fixation 1 object is found
 							collisionFound = true;
-							if (dir == "x") {po1.collidedX = true; po2.collidedX = true;}
-							if (dir == "y") {po1.collidedY = true; po2.collidedY = true;}
+							if (dir == "x") {po1.collidedX = po2; po2.collidedX = po1;}
+							if (dir == "y") {po1.collidedY = po2; po2.collidedY = po1;}
 						}
 					}
 					
@@ -134,27 +142,28 @@ public class CollisionDetector implements Updateable, Constants {
 			//use the collidedX and collidedY values to set speeds to 0, reset collidedX and collidedY, momentumObjects will change this
 			for (PhysicalObject po : pos) {
 				if (po.getFixation() == f+1) {
-					if (po.collidedX) po.setVelX(0);
-					if (po.collidedY) po.setVelY(0);
-					po.collidedX = false;
-					po.collidedY = false;
+					if (po.collidedX != null) {addCollisionEffect(po, po.collidedX, "x");}
+					if (po.collidedY != null) {addCollisionEffect(po, po.collidedY, "y");}
+					po.collidedX = null;
+					po.collidedY = null;
 				}
 			}
 			
-			//TODO add check for things that are moving really fast
 			//3. increase fixation and repeat
 			f++;
 		}
 		
 		//4. resolve collisions between non fixed objects
-		//TODO
 		for (PhysicalObject po1 : pos) {
 			if (po1.getFixation() != -1 || po1.isTransparent()) continue;
 			for (PhysicalObject po2 : pos) {
 				if (po2.getFixation() != -1 || po1 == po2 || po2.isTransparent()) continue;
 				String dir = adjustPosition(po1, false, po2, false);
-				if (dir == "x") {po1.setVelX(0); po2.setVelX(0);}
-				if (dir == "y") {po1.setVelY(0); po2.setVelY(0);}
+				//if (dir == "x") {po1.setVelX(0); po2.setVelX(0);}
+				//if (dir == "y") {po1.setVelY(0); po2.setVelY(0);}
+				if (dir != "alreadyResolved") {
+					addCollisionEffect(po1, po2, dir);
+				}
 			}
 		}
 		
@@ -223,14 +232,162 @@ public class CollisionDetector implements Updateable, Constants {
 		
 	}*/
 	
+	private void executeCollisionEffects() {
+		
+		for (int i = 0; i < collisionEffects.size(); i++) {
+			PhysicalObject[] p = collisionEffects.get(i);
+			String dir = collisionEffectDirs.get(i);
+			for (int j = 0; j < collisionEffects.size(); j++) {
+				if (i == j) continue;
+				if (dir != collisionEffectDirs.get(j)) continue;
+				if ((p[0] == collisionEffects.get(j)[0] && p[1] == collisionEffects.get(j)[1]) || 
+						(p[1] == collisionEffects.get(j)[0] && p[0] == collisionEffects.get(j)[1])) {
+					collisionEffects.remove(j);
+					collisionEffectDirs.remove(j);
+					if (j < i) i--;
+				}
+			}
+		}
+		
+		for (int i = 0; i < collisionEffects.size(); i++) {
+			PhysicalObject po1 = collisionEffects.get(i)[0];
+			PhysicalObject po2 = collisionEffects.get(i)[1];
+			String dir = collisionEffectDirs.get(i);
+			boolean fix1 = po1.getFixation() == 0;
+			boolean fix2 = po2.getFixation() == 0;
+			bounce(po1, fix1, po2, fix2, dir);
+			friction(po1, fix1, po2, fix2, dir);
+		}
+		collisionEffects.clear();
+		collisionEffectDirs.clear();
+	}
+	
+	private void bounce(PhysicalObject p1, boolean fix1, PhysicalObject p2, boolean fix2, String dir) {
+		
+		double m1 = p1.getMass();
+		double m2 = p2.getMass();
+		double e = p1.getElasticity() * p2.getElasticity();
+		
+		if (dir == "x") {
+			
+			double v1i = p1.getVelX();
+			double v2i = p2.getVelX();
+			
+			double v1f = (2*v2i + (m1/m2 - 1)*v1i) / (1 + m1/m2);
+			double v2f = (2*v1i + (m2/m1 - 1)*v2i) / (1 + m2/m1);
+			
+			if (fix1) {v2f = 2*v1i - v2i; v1f = 0;}
+			if (fix2) {v1f = 2*v2i - v1i; v2f = 0;}
+			
+			if (Math.abs(v1f) < MIN_BOUNCE_VEL) v1f = 0;
+			if (Math.abs(v2f) < MIN_BOUNCE_VEL) v2f = 0;
+			
+			p1.setVelX(v1f*e);
+			p2.setVelX(v2f*e);
+			
+			return;
+		}
+		
+		if (dir == "y") {
+			
+			double v1i = p1.getVelY();
+			double v2i = p2.getVelY();
+			
+			double v1f = (2*v2i + (m1/m2 - 1)*v1i) / (1 + m1/m2);
+			double v2f = (2*v1i + (m2/m1 - 1)*v2i) / (1 + m2/m1);
+			
+			if (fix1) {v2f = 2*v1i - v2i; v1f = 0;}
+			if (fix2) {v1f = 2*v2i - v1i; v2f = 0;}
+			
+			if (Math.abs(v1f) < MIN_BOUNCE_VEL) v1f = 0;
+			if (Math.abs(v2f) < MIN_BOUNCE_VEL) v2f = 0;
+			
+			p1.setVelY(v1f*e);
+			p2.setVelY(v2f*e);
+			
+		}
+		
+	}
+	
+	private void friction(PhysicalObject p1, boolean fix1, PhysicalObject p2, boolean fix2, String dir) {
+		double f = p1.getFriction() * p2.getFriction();
+		
+		if (dir == "x") {
+			if (!fix1) p1.velY *= 1-f;
+			if (!fix2) p2.velY *= 1-f;
+		}
+		if (dir == "y") {
+			if (!fix1) p1.velX *= 1-f;
+			if (!fix2) p2.velX *= 1-f;
+		}
+	}
+	
+	public void fixChangeSizeCollision(PhysicalObject po1) {
+		
+		double maxColUp=0, maxColDown=0, maxColLeft=0, maxColRight=0;
+		
+		for (GameObject go : gm.getObjects()) {
+			if (!(go instanceof PhysicalObject)) continue;
+			PhysicalObject po2 = (PhysicalObject)go;
+			if (po2 == po1) continue;
+			if (!checkCollision(po1, po2)) continue;
+			
+			//positive values indicate overlap
+			double upOverlap = po2.posY + po2.height - po1.posY;
+			double downOverlap = po1.posY + po1.height - po2.posY;
+			double leftOverlap = po2.posX + po2.width - po1.posX;
+			double rightOverlap = po1.posX + po1.width - po2.posX;
+			
+			//if the overlap is <= to 0 set it to max so we can get the min overlap
+			if (upOverlap <= 0) upOverlap = Double.MAX_VALUE;
+			if (downOverlap <= 0) downOverlap = Double.MAX_VALUE;
+			if (leftOverlap <= 0) leftOverlap = Double.MAX_VALUE;
+			if (rightOverlap <= 0) rightOverlap = Double.MAX_VALUE;
+			
+			//find the smallest overlap
+			double smallestOverlap = Math.min(upOverlap, Math.min(downOverlap, Math.min(leftOverlap, rightOverlap)));
+			if (smallestOverlap == Double.MAX_VALUE) continue;
+			
+			//whatever the smallest overlap is, if it is bigger than any other overlaps in that direction
+			//change the max overlap in that direction to what ever that smallest overlap was
+			if (upOverlap == smallestOverlap && maxColUp < upOverlap) maxColUp = upOverlap;
+			if (downOverlap == smallestOverlap && maxColDown < downOverlap) maxColDown = downOverlap;
+			if (leftOverlap == smallestOverlap && maxColLeft < leftOverlap) maxColLeft = leftOverlap;
+			if (rightOverlap == smallestOverlap && maxColRight < rightOverlap) maxColRight = rightOverlap;
+			
+		}
+		
+		//check for cramping
+		if (maxColUp > 0 && maxColDown > 0) {
+			if (po1.velY == 0) po1.velY = -0.5;
+			System.out.println("Size change cramping in y on " + po1.getTag());
+		}
+		if (maxColLeft > 0 && maxColRight > 0) {
+			if (po1.velX == 0) po1.velX = 0.5;
+			System.out.println("Size change cramping in x on " + po1.getTag());
+		}
+		
+		//adjust position
+		po1.posY += (maxColUp * 1.00000001) - (maxColDown * 1.00000001);
+		po1.posX += (maxColLeft * 1.00000001) - (maxColRight * 1.00000001);
+		
+	}
+	
 	private String adjustPosition(PhysicalObject po1, boolean fix1, PhysicalObject po2, boolean fix2) {
 		if (!checkCollision(po1, po2)) return "alreadyResolved";
 		
 		double[] v1 = po1.getVelocityVector();
 		double[] v2 = po2.getVelocityVector();
 		
-		if (fix1) {v1 = new double[] {0,0};}
-		if (fix2) {v2 = new double[] {0,0};}
+		//Account for fixed objects
+		if (fix1 && po1.fixedX) {v1 = new double[] {0,v1[1]};}
+		if (fix1 && po1.fixedY) {v1 = new double[] {v1[0],0};}
+		if (fix1 && po1.fixedX && po1.fixedY) {v1 = new double[] {0,0};}
+		if (fix2 && po2.fixedX) {v2 = new double[] {0,v2[1]};}
+		if (fix2 && po2.fixedY) {v2 = new double[] {v2[0],0};}
+		if (fix2 && po2.fixedX && po2.fixedY) {v2 = new double[] {0,0};}
+		
+		if (v1[0] == 0 && v1[1] == 0 && v2[0] == 0 && v2[1] == 0) {System.out.println("Cramping: two zero velocities in adjust position"); return "";}
 		
 		double dx1=0, dy1=0, dx2=0, dy2=0;
 		
@@ -261,6 +418,7 @@ public class CollisionDetector implements Updateable, Constants {
 			dx2 += -0.001 * v2[0];
 			dy2 += -0.001 * v2[1];
 		}
+		
 		//check to see which direction the collision was actually in
 		boolean inX, inY;
 		po1.changePosXBy(v1[0] * 0.001);
@@ -360,21 +518,9 @@ public class CollisionDetector implements Updateable, Constants {
 		return false;
 	}
 	
-	public String getQuadrant(double[] v) {
-		if (v.length != 2) return "v is not a 2d vector";
-		//point case
-		if (v[0] == 0 && v[1] == 0) return "v is the 0 vector";
-		//axis cases
-		if (v[0] == 0) return "y";
-		if (v[1] == 0) return "x";
-		//quadrant cases
-		if (v[0] > 0) {
-			if (v[1] > 0) return "I";
-			else return "IV";
-		} else {
-			if (v[1] > 0) return "II";
-			else return "III";
-		}
+	private void addCollisionEffect(PhysicalObject po1, PhysicalObject po2, String dir) {
+		collisionEffects.add(new PhysicalObject[] {po1, po2});
+		collisionEffectDirs.add(dir);
 	}
 	
 }
