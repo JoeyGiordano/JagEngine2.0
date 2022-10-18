@@ -5,7 +5,6 @@ import java.awt.Color;
 import com.giordano.engine.AbstractGame;
 import com.giordano.engine.GameContainer;
 import com.giordano.engine.Renderer;
-import com.giordano.engine.gfx.Image;
 
 public class GameManager extends AbstractGame implements Constants {
 	//if using eclipse make sure to add the resources folder to the build path (right-click res folder -> Build Path -> Use as source folder
@@ -16,7 +15,7 @@ public class GameManager extends AbstractGame implements Constants {
 		
 		//all
 		//*
-		object = new TestObject("test", 0, 0, 10,10, true, false, false);
+		object = new TestObject("test", 0, 0, 9,9, true, false, false);
 		object2 = new TestObject("test1", 110, 90, "/testStageBlock2.png", true, false, false);
 		object3 = new TestObject("test2", -90, 90, "/testStageBlock2.png", true, false, false);
 		platform = new TestObject("platform", -100, 100, "/fonts/zapfino.png", false, false, true);

@@ -1,11 +1,9 @@
 package com.giordano.game;
 
-import java.util.ArrayList;
+import java.awt.Color;
+
 import com.giordano.engine.GameContainer;
 import com.giordano.engine.Renderer;
-import com.giordano.engine.Updateable;
-import com.giordano.engine.gfx.Image;
-import com.giordano.engine.gfx.ImageTile;
 
 public abstract class GameObject implements Constants {
 	
@@ -17,6 +15,8 @@ public abstract class GameObject implements Constants {
 	protected double posX, posY;
 	protected GameObject[] collisionObjects;
 	private boolean destroyed = false;
+	protected boolean visualize = false;
+	protected Color visualizeColor = Color.magenta;
 	
 	public GameObject(String tag, double posX, double posY) {
 		this.tag = tag;
@@ -31,7 +31,7 @@ public abstract class GameObject implements Constants {
 	}
 	
 	public void render(GameContainer gc, Renderer r) {
-		
+		if (visualize) r.setPixel((int)Math.round(getCenterX()), (int)Math.round(getCenterY()), visualizeColor.getRGB());
 	}
 	
 	public void destroy() {

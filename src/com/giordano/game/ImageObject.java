@@ -16,8 +16,6 @@ public abstract class ImageObject extends GameObject {
 	protected int height;
 	
 	protected boolean render = true;
-	protected boolean visualize = false;
-	protected Color visualizeColor = Color.magenta;
 	
 	
 	public ImageObject(String tag, double posX, double posY, String defaultImagePath) {
