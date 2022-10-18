@@ -9,15 +9,12 @@ import com.giordano.engine.gfx.Image;
 public abstract class ImageObject extends GameObject {
 	
 	final boolean noImage;
+	protected boolean render = true;
 	
 	private String defaultImagePath, imagePath;
 	private Image image;
 	protected int width;
 	protected int height;
-	
-	protected boolean render = true;
-	protected boolean visualize = false;
-	protected Color visualizeColor = Color.magenta;
 	
 	
 	public ImageObject(String tag, double posX, double posY, String defaultImagePath) {
