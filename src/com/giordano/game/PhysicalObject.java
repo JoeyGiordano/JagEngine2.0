@@ -25,6 +25,16 @@ public abstract class PhysicalObject extends ImageObject {
 		this.friction = friction;
 	}
 	
+	public PhysicalObject(String tag, double posX, double posY, int width, int height, boolean useGravity, boolean transparent, boolean fixed, double mass, double elasticity, double friction) {
+		super(tag, posX, posY, width, height);
+		this.useGravity = useGravity;
+		this.transparent = transparent;
+		this.fixed = fixed;
+		this.mass = mass;
+		this.elasticity = elasticity;
+		this.friction = friction;
+	}
+	
 	public PhysicalObject(String tag, double posX, double posY, String defaultImagePath, boolean useGravity, boolean transparent, boolean fixed) {
 		super(tag, posX, posY, defaultImagePath);
 		this.useGravity = useGravity;

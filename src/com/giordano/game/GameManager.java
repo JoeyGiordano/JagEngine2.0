@@ -1,5 +1,7 @@
 package com.giordano.game;
 
+import java.awt.Color;
+
 import com.giordano.engine.AbstractGame;
 import com.giordano.engine.GameContainer;
 import com.giordano.engine.Renderer;
@@ -14,13 +16,17 @@ public class GameManager extends AbstractGame implements Constants {
 		
 		//all
 		//*
-		object = new TestObject("test", 0, 0, "/testStageBlock.png", true, false, false);
+		object = new TestObject("test", 0, 0, 10,10, true, false, false);
 		object2 = new TestObject("test1", 110, 90, "/testStageBlock2.png", true, false, false);
 		object3 = new TestObject("test2", -90, 90, "/testStageBlock2.png", true, false, false);
 		platform = new TestObject("platform", -100, 100, "/fonts/zapfino.png", false, false, true);
 		object.setVelXY(1, -3);
 		object2.setVelXY(-1, -1);
 		object3.setVelXY(2, -2);
+		platform.visualize = true;
+		object.visualize = true;
+		object.setVisualizeColor(Color.GREEN);
+		//object2.render = false;
 		//*/
 		
 		//bounce into slide into collide
