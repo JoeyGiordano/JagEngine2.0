@@ -2,7 +2,7 @@ package com.giordano.game;
 
 import com.giordano.engine.GameContainer;
 
-public abstract class PhysicalObject extends ImageObject {
+public class PhysicalObject extends ImageObject {
 	
 	protected boolean useGravity, transparent, fixed;
 	protected double velX, velY;
@@ -25,14 +25,14 @@ public abstract class PhysicalObject extends ImageObject {
 		this.friction = friction;
 	}
 	
-	public PhysicalObject(String tag, double posX, double posY, int width, int height, boolean useGravity, boolean transparent, boolean fixed, double mass, double elasticity, double friction) {
+	public PhysicalObject(String tag, double posX, double posY, int width, int height, boolean useGravity, boolean transparent, boolean fixed) {
 		super(tag, posX, posY, width, height);
 		this.useGravity = useGravity;
 		this.transparent = transparent;
 		this.fixed = fixed;
-		this.mass = mass;
-		this.elasticity = elasticity;
-		this.friction = friction;
+		mass = 1;
+		elasticity = .7;
+		friction = 0.2;
 	}
 	
 	public PhysicalObject(String tag, double posX, double posY, String defaultImagePath, boolean useGravity, boolean transparent, boolean fixed) {
@@ -68,6 +68,22 @@ public abstract class PhysicalObject extends ImageObject {
 		if (newWidth > oldWidth || newHeight > oldHeight) {
 			gm.cd.fixChangeSizeCollision(this);
 		}
+	}
+	
+	public void applyForce(double magnitude, double direction, float dt) {
+		//degrees please
+		applyForceXY(magnitude * Math.cos(Math.toRadians(direction)), magnitude * Math.sin(Math.toRadians(direction)), dt);
+	}
+	public void applyForceXY(double x, double y, float dt) {
+		accelerateXY(x/mass, y/mass, dt);
+	}
+	public void accelerate(double magnitude, double direction, float dt) {
+		//degrees please
+		accelerateXY(magnitude * Math.cos(Math.toRadians(direction)), magnitude * Math.sin(Math.toRadians(direction)), dt);
+	}
+	public void accelerateXY(double x, double y, float dt) {
+		velX += x * dt;
+		velY += y * dt;
 	}
 	
 	public boolean isUseGravity() {
@@ -143,5 +159,4 @@ public abstract class PhysicalObject extends ImageObject {
 	public void setFriction(double friction) {
 		this.friction = friction;
 	}
-	
 }

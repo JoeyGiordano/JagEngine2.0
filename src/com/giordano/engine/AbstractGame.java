@@ -51,8 +51,8 @@ public abstract class AbstractGame implements Constants {
 	
 	public static void main(String[] args) {
 		GameContainer gc = new GameContainer(gm);
-		gc.setWidth(width);
-		gc.setHeight(height);
+		gc.setWidth(SCREEN_WIDTH);
+		gc.setHeight(SCREEN_HEIGHT);
 		gc.setScale(scale);
 		gc.setTitle(title);
 		gc.start();

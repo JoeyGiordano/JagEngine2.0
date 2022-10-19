@@ -11,7 +11,7 @@ public abstract class GameObject implements Constants {
 	//the update and render are defined empty here, but subclasses can override them to add functionalities
 	//subclasses of subclasses that override the update and render methods should call super.update() so functionalities are not lost
 	
-	private String tag;
+	protected String tag;
 	protected double posX, posY;
 	protected GameObject[] collisionObjects;
 	private boolean destroyed = false;
@@ -88,6 +88,29 @@ public abstract class GameObject implements Constants {
 	}
 	public void setCollisionObjects(GameObject[] collisionObjects) {
 		this.collisionObjects = collisionObjects;
+	}
+	public void setVisualize(boolean visualize) {
+		this.visualize = visualize;
+	}
+	public void setVisualizeColor(Color visualizeColor) {
+		this.visualizeColor = visualizeColor;
+	}
+	
+	public double xDistanceTo(GameObject go) {
+		return go.getCenterX() - getCenterX();
+	}
+	public double yDistanceTo(GameObject go) {
+		return go.getCenterY() - getCenterY();
+	}
+	public double squareDistanceTo(GameObject go) {
+		return Math.pow(xDistanceTo(go),2) + Math.pow(yDistanceTo(go),2); 
+	}
+	public double distanceTo(GameObject go) {
+		return Math.sqrt(squareDistanceTo(go));
+	}
+	public double directionTo(GameObject go) {
+		//in degrees
+		return Math.toDegrees(Math.atan2(yDistanceTo(go), xDistanceTo(go)));
 	}
 	
 }

@@ -238,6 +238,39 @@ public class Renderer {
 		}
 	}
 	
+	public void drawLine(double x1, double y1, double x2, double y2, int color) {
+		double slope = (y1-y2)/(x1-x2);
+		if (Math.abs(slope) < 1)  {
+			if (x1 > x2) {
+				double temp = x1;
+				x1 = x2;
+				x2 = temp;
+				temp = y1;
+				y1 = y2;
+				y2 = temp;
+			}
+			double y = y1;
+			for (double x = x1; x < x2; x+=1) {
+				setPixel((int)Math.round(x),(int)Math.round(y),color);
+				y += slope;
+			}
+		} else {
+			if (y1 > y2) {
+				double temp = x1;
+				x1 = x2;
+				x2 = temp;
+				temp = y1;
+				y1 = y2;
+				y2 = temp;
+			}
+			double x = x1;
+			for (double y = y1; y < y2; y+=1) {
+				setPixel((int)Math.round(x),(int)Math.round(y),color);
+				x += 1/slope;
+			}
+		}
+	}
+	
 	public void drawRect(int offX, int offY, int width, int height, int color) {
 		for (int y = 0; y <= height; y++) {
 			setPixel(offX, y + offY, color);
@@ -259,7 +292,7 @@ public class Renderer {
 		if (offX >= pW) {return;}
 		if (offY >= pH) {return;}
 		*/
-				
+			
 		int newX = 0;
 		int newY = 0;
 		int newWidth = width;
@@ -275,6 +308,22 @@ public class Renderer {
 		for (int y = newY; y < newHeight; y++) {
 			for (int x = newX; x < newWidth; x++) {
 				setPixel(x + offX, y + offY, color);
+			}
+		}
+	}
+	
+	public void drawCircle(int offX, int offY, int radius, int color) {
+		int newX = 0;
+		int newY = 0;
+		int newWidth = 2*radius;
+		int newHeight = 2*radius;
+		
+		int rsquared = (int)Math.pow(radius,2);
+		
+		for (int y = newY; y < newHeight; y++) {
+			for (int x = newX; x < newWidth; x++) {
+				if (Math.pow(x-radius,2) + Math.pow(y-radius, 2) < rsquared)
+					setPixel(x + offX, y + offY, color);
 			}
 		}
 	}

@@ -6,7 +6,7 @@ import com.giordano.engine.GameContainer;
 import com.giordano.engine.Renderer;
 import com.giordano.engine.gfx.Image;
 
-public abstract class ImageObject extends GameObject {
+public class ImageObject extends GameObject {
 	
 	final boolean noImage;
 	protected boolean render = true;
@@ -38,8 +38,8 @@ public abstract class ImageObject extends GameObject {
 		
 		if (!render) return;
 		
-		if (noImage && visualize) {
-			r.drawRect((int)Math.round(posX), (int)Math.round(posY), width-1, height-1, visualizeColor.getRGB());
+		if (noImage) {
+			if (visualize) r.drawRect((int)Math.round(posX), (int)Math.round(posY), width-1, height-1, visualizeColor.getRGB());
 			return;
 		}
 		
@@ -90,12 +90,6 @@ public abstract class ImageObject extends GameObject {
 	}
 	public void setRender(boolean render) {
 		this.render = render;
-	}
-	public void setVisualize(boolean visualize) {
-		this.visualize = visualize;
-	}
-	public void setVisualizeColor(Color visualizeColor) {
-		this.visualizeColor = visualizeColor;
 	}
 
 	public void changeSize(int newWidth, int newHeight, double scaleFromX, double scaleFromY) {

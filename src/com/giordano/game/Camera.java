@@ -43,8 +43,8 @@ public class Camera {
 			return;
 		}
 		
-		double targetX = target.getCenterX() - Constants.width/2;
-		double targetY = target.getCenterY() - Constants.height/2;
+		double targetX = target.getCenterX() - Constants.SCREEN_WIDTH/2;
+		double targetY = target.getCenterY() - Constants.SCREEN_HEIGHT/2;
 		
 
 		offX -= dt * (offX - targetX) * CAMERA_SPEED;
@@ -58,8 +58,8 @@ public class Camera {
 	}
 	
 	public void cutToTarget() {
-		offX = (float)target.getCenterX() - Constants.width/2;
-		offY = (float)target.getCenterY() - Constants.height/2;
+		offX = (float)target.getCenterX() - Constants.SCREEN_WIDTH/2;
+		offY = (float)target.getCenterY() - Constants.SCREEN_HEIGHT/2;
 	}
 	
 	public GameObject getTarget() {
