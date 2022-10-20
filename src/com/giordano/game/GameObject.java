@@ -113,6 +113,9 @@ public abstract class GameObject implements Constants {
 	public double squareDistanceTo(GameObject go) {
 		return Math.pow(xDistanceTo(go),2) + Math.pow(yDistanceTo(go),2); 
 	}
+	public double distanceTo(double x, double y) {
+		return Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+	}
 	public double distanceTo(GameObject go) {
 		return Math.sqrt(squareDistanceTo(go));
 	}

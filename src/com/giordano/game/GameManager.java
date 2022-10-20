@@ -41,7 +41,7 @@ public class GameManager extends AbstractGame implements Constants {
 		
 		//missiles
 		if (missileCount == 0) {
-			createMissile(0,5);
+			createMissile(0,90);
 		}
 	}
 	
@@ -65,6 +65,9 @@ public class GameManager extends AbstractGame implements Constants {
 		background.setZdepth(0);
 		player = new Player("p", 0, 0);
 		camera.setTarget(player.tag);
+		
+		totalMissileCount = 0;
+		missileCount = 0;
 	}
 	
 	public void stopGame() {

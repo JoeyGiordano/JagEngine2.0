@@ -39,6 +39,9 @@ public interface Constants {
 	public static double dotProduct(double ax, double ay, double bx, double by) {
 		return ax*bx+ay*by;
 	}
+	public static double crossProduct2D(double ax, double ay, double bx, double by) {
+		return ax*by-ay*bx;
+	}
 	public static double[] vectorProjection(double ax, double ay, double bx, double by) {
 		//a onto b
 		double d = dotProduct(ax,ay,bx,by);

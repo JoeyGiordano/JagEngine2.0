@@ -1,7 +1,6 @@
 package com.giordano.game;
 
 import java.awt.Color;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import com.giordano.engine.GameContainer;
@@ -31,7 +30,7 @@ public class Player extends GameObject {
 	public void update(GameContainer gc, GameManager gm, float dt) {
 		
 		if (ball.collisionObjects.length != 1) gameOver += 1;
-		if (gameOver == 100) gm.stopGame();
+		if (gameOver == 60) gm.stopGame();
 		if (gameOver > 0) return;
 		
 		if (gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
@@ -51,6 +50,25 @@ public class Player extends GameObject {
 		double vSquaredOverR = Math.pow(ballVel,2) / distanceTo(ball);
 		ball.accelerate(vSquaredOverR, dirToCenter, 1);
 		
+		//missile killing
+		if (!transitioning) {
+			for (GameObject g : gm.getObjects()) {
+				if (!g.tag.contains("missile")) continue;
+				Missile m = (Missile)g;
+				
+				if (distanceTo(m) < distanceTo(ball) && Math.abs(Constants.crossProduct2D(ball.posX-posX, ball.posY-posY, m.posX-posX, m.posY-posY)) < distanceTo(m)
+						&& 0 < Constants.dotProduct(ball.posX-posX, ball.posY-posY, m.posX-posX, m.posY-posY)) {
+					gm.destroyObject(m);
+				}
+			}
+		} else {
+			for (GameObject g : gm.getObjects()) {
+				if (!g.tag.contains("missile")) continue;
+				((Missile)g).touchedByString = false;
+			}
+		}
+		
+		
 	}
 	
 	@Override
@@ -58,7 +76,7 @@ public class Player extends GameObject {
 		r.drawRect((int)Math.round(ball.posX+1), (int)Math.round(ball.posY+1), ball.width-3, ball.height-3, Color.green.getRGB());
 		
 		if (gameOver < 1) {
-			r.drawLine(getCenterX(), getCenterY(), ball.getCenterX(), ball.getCenterY(), new Color(190, 50, 50).getRGB());
+			if (!transitioning) r.drawLine(getCenterX(), getCenterY(), ball.getCenterX(), ball.getCenterY(), new Color(190, 50, 50).getRGB());
 			r.drawCircle((int)Math.round(posX), (int)Math.round(posY), 2, new Color(0,150,0).getRGB());
 		}
 		
