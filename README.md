@@ -1,5 +1,2 @@
 # JagEngine
-Game engine (based off of Majoolwip)
-
-
-README INFO HERE
+SwingIT is a fun, fast-paced game with no apparent theme and some slightly confusing mechanics! You go around in circles. To recenter you circling, click anywhere on the screen. The ball will then move straight until the rope can attach perpendicular to the velocity of the ball. Avoid the red thingys, collect the bluegreen thingys, press space when the bar is full to reverse, and don't fall off the map!
