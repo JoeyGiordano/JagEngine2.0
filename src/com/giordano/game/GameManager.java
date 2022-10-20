@@ -14,6 +14,9 @@ public class GameManager extends AbstractGame implements Constants {
 	
 	int totalMissileCount = 0;
 	int missileCount = 0;
+	int missileTime = 0;
+	
+	int highScore = 0;
 	
 	public boolean gameOver = true;
 	int updateBlink = 0;
@@ -40,9 +43,13 @@ public class GameManager extends AbstractGame implements Constants {
 		}
 		
 		//missiles
-		if (missileCount == 0) {
-			createMissile(0,90);
+		if (missileTime == 300) {
+			createMissile((int)(Math.random()*1000-500),(int)(Math.random()*700-350));
+			missileTime = 0;
 		}
+		missileTime++;
+		
+		
 	}
 	
 	@Override
@@ -52,6 +59,7 @@ public class GameManager extends AbstractGame implements Constants {
 			r.drawText("SwingIT", -20, -10, new Color(150,0,240).getRGB());
 			if (updateBlink >= 30) r.drawText("Press Space To Play", -55, 5, new Color(0,120,55).getRGB());
 			if (updateBlink == 65) updateBlink = 0;
+			r.drawText("High Score: " + highScore, 5+(int)camera.getOffX(), 5+(int)camera.getOffY(), new Color(90,0,240).getRGB());
 			return;
 		}
 		

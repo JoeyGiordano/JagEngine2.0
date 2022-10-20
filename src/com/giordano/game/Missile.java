@@ -8,8 +8,7 @@ import com.giordano.engine.Renderer;
 public class Missile extends PhysicalObject {
 	
 	double facing = 0;
-	double speed = 0.5;
-	boolean enclosed = false;
+	double speed = 1;
 	double timeToEscapeBy = 0;
 	boolean touchedByString = false;
 	

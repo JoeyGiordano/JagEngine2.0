@@ -10,7 +10,7 @@ public interface Constants {
 	public final int SCREEN_HEIGHT = 240;
 	public final float scale = 3;
 	public final String title = "SwingIT";
-	public final boolean displayFrameInfo = true;
+	public final boolean displayFrameInfo = false;
 	
 	//Game Settings
 	public final double CAMERA_SPEED = 2;

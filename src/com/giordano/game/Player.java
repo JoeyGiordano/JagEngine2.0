@@ -12,6 +12,7 @@ public class Player extends GameObject {
 	public double ballVel = 2.0;
 	public boolean transitioning = false;
 	public int gameOver = -1;
+	public int score = 0;
 	
 	
 	public Player(String tag, double posX, double posY) {
@@ -59,6 +60,8 @@ public class Player extends GameObject {
 				if (distanceTo(m) < distanceTo(ball) && Math.abs(Constants.crossProduct2D(ball.posX-posX, ball.posY-posY, m.posX-posX, m.posY-posY)) < distanceTo(m)
 						&& 0 < Constants.dotProduct(ball.posX-posX, ball.posY-posY, m.posX-posX, m.posY-posY)) {
 					gm.destroyObject(m);
+					score++;
+					if (gm.highScore < score) gm.highScore = score;
 				}
 			}
 		} else {
@@ -74,6 +77,8 @@ public class Player extends GameObject {
 	@Override
 	public void render(GameContainer gc, Renderer r) {
 		r.drawRect((int)Math.round(ball.posX+1), (int)Math.round(ball.posY+1), ball.width-3, ball.height-3, Color.green.getRGB());
+		
+		r.drawText("Score: " + score, 5+(int)camera.getOffX(), 5+(int)camera.getOffY(), new Color(90,0,240).getRGB());
 		
 		if (gameOver < 1) {
 			if (!transitioning) r.drawLine(getCenterX(), getCenterY(), ball.getCenterX(), ball.getCenterY(), new Color(190, 50, 50).getRGB());
