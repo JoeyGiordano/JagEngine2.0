@@ -9,8 +9,11 @@ import com.giordano.engine.Renderer;
 
 public class GameManager extends AbstractGame implements Constants {
 	//if using eclipse make sure to add the resources folder to the build path (right-click res folder -> Build Path -> Use as source folder
-	Player p;
+	Player player;
 	ImageObject background;
+	
+	int totalMissileCount = 0;
+	int missileCount = 0;
 	
 	public boolean gameOver = true;
 	int updateBlink = 0;
@@ -30,10 +33,15 @@ public class GameManager extends AbstractGame implements Constants {
 			return;
 		}
 		
-		if (p.transitioning) {
-			camera.setTarget(p.ball.tag);
+		if (player.transitioning) {
+			camera.setTarget(player.ball.tag);
 		} else {
-			camera.setTarget(p.tag);
+			camera.setTarget(player.tag);
+		}
+		
+		//missiles
+		if (missileCount == 0) {
+			createMissile(0,5);
 		}
 	}
 	
@@ -55,13 +63,19 @@ public class GameManager extends AbstractGame implements Constants {
 	public void startGame() {
 		background = new ImageObject("bkgd",-400,-300,"/bkgd.jpg");
 		background.setZdepth(0);
-		p = new Player("p", 0, 0);
-		camera.setTarget(p.tag);
+		player = new Player("p", 0, 0);
+		camera.setTarget(player.tag);
 	}
 	
 	public void stopGame() {
 		gameOver = true;
 		destroyAllObjects();
+	}
+	
+	public void createMissile(int posX, int posY) {
+		new Missile(totalMissileCount, posX, posY);
+		totalMissileCount++;
+		missileCount++;
 	}
 	
 }
