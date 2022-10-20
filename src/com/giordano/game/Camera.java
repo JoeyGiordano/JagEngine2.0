@@ -75,7 +75,11 @@ public class Camera {
 		target = null;
 		this.targetTag = targetTag;
 	}
-
+	
+	public void resetTarget() {
+		target = defaultTarget;
+	}
+	
 	public float getOffX() {
 		return offX;
 	}

@@ -10,6 +10,7 @@ import com.giordano.game.GameObject;
 public abstract class AbstractGame implements Constants {
 	
 	protected ArrayList<GameObject> objects = new ArrayList<GameObject>();
+	private ArrayList<GameObject> destroyObjects = new ArrayList<GameObject>();
 	public CollisionDetector cd = new CollisionDetector();
 	
 	public AbstractGame() {
@@ -35,18 +36,23 @@ public abstract class AbstractGame implements Constants {
 		for (GameObject obj : objects) {
 			obj.update(gc, gm, dt);
 		}
+		for (GameObject obj : destroyObjects) {
+			objects.remove(obj);
+		}
+		destroyObjects.clear();
 		for (Updateable u : Updateable.updateables) {
 			u.update();
 		}
 	}
 	
 	public void Render(GameContainer gc, Renderer r) {
-		render(gc,r);
 		
 		camera.render(r);
 		for (GameObject obj : objects) {
 			obj.render(gc, r);
 		}
+		
+		render(gc,r);
 	}
 	
 	public static void main(String[] args) {
@@ -64,12 +70,29 @@ public abstract class AbstractGame implements Constants {
 				return objects.get(i);
 			}
 		}
-		System.out.println("getObject could not find a GameObject with given tag");
+		System.out.println("getObject could not find a GameObject with tag " + tag);
 		return null;
 	}
 	
 	public ArrayList<GameObject> getObjects() {
 		return objects;
+	}
+	
+	public void destroyObject(String tag) {
+		destroyObject(getObject(tag));
+	}
+	
+	public void destroyObject(GameObject g) {
+		destroyObjects.add(g);
+		if (camera.getTarget() == g) {
+			camera.resetTarget();
+		}
+	}
+	
+	public void destroyAllObjects() {
+		for (GameObject obj : objects) {
+			destroyObject(obj);
+		}
 	}
 	
 }

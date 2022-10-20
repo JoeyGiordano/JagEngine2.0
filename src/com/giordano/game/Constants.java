@@ -13,11 +13,10 @@ public interface Constants {
 	public final boolean displayFrameInfo = true;
 	
 	//Game Settings
-	public final double CAMERA_SPEED = 1;
+	public final double CAMERA_SPEED = 2;
 	public final double GRAVITY = 9.81;
 	public final double WARNING_SPEED = 10;
 	public final double MIN_BOUNCE_VEL = 0.05;
-	
 	
 	
 	

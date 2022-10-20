@@ -17,6 +17,7 @@ public abstract class GameObject implements Constants {
 	private boolean destroyed = false;
 	protected boolean visualize = false;
 	protected Color visualizeColor = Color.magenta;
+	private int zDepth = 1;
 	
 	public GameObject(String tag, double posX, double posY) {
 		this.tag = tag;
@@ -31,6 +32,7 @@ public abstract class GameObject implements Constants {
 	}
 	
 	public void render(GameContainer gc, Renderer r) {
+		r.setzDepth(zDepth);
 		if (visualize) r.setPixel((int)Math.round(getCenterX()), (int)Math.round(getCenterY()), visualizeColor.getRGB());
 	}
 	
@@ -94,6 +96,12 @@ public abstract class GameObject implements Constants {
 	}
 	public void setVisualizeColor(Color visualizeColor) {
 		this.visualizeColor = visualizeColor;
+	}
+	public double getZdepth() {
+		return zDepth;
+	}
+	public void setZdepth(int zDepth) {
+		this.zDepth = zDepth;
 	}
 	
 	public double xDistanceTo(GameObject go) {

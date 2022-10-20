@@ -313,17 +313,15 @@ public class Renderer {
 	}
 	
 	public void drawCircle(int offX, int offY, int radius, int color) {
-		int newX = 0;
-		int newY = 0;
 		int newWidth = 2*radius;
 		int newHeight = 2*radius;
 		
 		int rsquared = (int)Math.pow(radius,2);
 		
-		for (int y = newY; y < newHeight; y++) {
-			for (int x = newX; x < newWidth; x++) {
+		for (int y = 0; y < newHeight; y++) {
+			for (int x = 0; x < newWidth; x++) {
 				if (Math.pow(x-radius,2) + Math.pow(y-radius, 2) < rsquared)
-					setPixel(x + offX, y + offY, color);
+					setPixel(x + offX - radius, y + offY - radius, color);
 			}
 		}
 	}
