@@ -15,6 +15,9 @@ public class GameManager extends AbstractGame implements Constants {
 	int totalMissileCount = 0;
 	int missileCount = 0;
 	int missileTime = 0;
+	int missileCountdown = 300;
+	
+	int coinTime = 0;
 	
 	int highScore = 0;
 	
@@ -43,13 +46,19 @@ public class GameManager extends AbstractGame implements Constants {
 		}
 		
 		//missiles
-		if (missileTime == 300) {
+		if (missileTime == missileCountdown) {
 			createMissile((int)(Math.random()*1000-500),(int)(Math.random()*700-350));
 			missileTime = 0;
+			if (missileCountdown != 0 && Math.random() < 0.2) missileCountdown--;
 		}
 		missileTime++;
 		
-		
+		//coins
+		if (coinTime == 150) {
+			spawnCoins(2);
+			coinTime = 0;
+		}
+		coinTime++;
 	}
 	
 	@Override
@@ -69,13 +78,17 @@ public class GameManager extends AbstractGame implements Constants {
 	}
 	
 	public void startGame() {
-		background = new ImageObject("bkgd",-400,-300,"/bkgd.jpg");
+		background = new ImageObject("bkgd",-400,-255,"/bkgd.jpg");
 		background.setZdepth(0);
-		player = new Player("p", 0, 0);
+		background.setVisualize(true);
+		background.setVisualizeColor(Color.red);
+		player = new Player("player", 0, 0);
 		camera.setTarget(player.tag);
 		
 		totalMissileCount = 0;
 		missileCount = 0;
+		
+		spawnCoins(10);
 	}
 	
 	public void stopGame() {
@@ -87,6 +100,24 @@ public class GameManager extends AbstractGame implements Constants {
 		new Missile(totalMissileCount, posX, posY);
 		totalMissileCount++;
 		missileCount++;
+	}
+	
+	public void createCoin(int posX, int posY) {
+		new Coin(posX, posY);
+	}
+	
+	public void spawnCoins(int spawns) {
+		for (int i = 0; i < spawns; i++) {
+			createCoinCurve((int)(Math.random()*1000-500),(int)(Math.random()*700-350), Math.random() * 100);
+		}
+	}
+	
+	public void createCoinCurve(int posX, int posY, double radius) {
+		double start = Math.random() * 2*Math.PI+0.2;
+		double radiansOfCoins = Math.random() * 2*Math.PI+0.2;
+		for (double i = start; i <= radiansOfCoins; i+=20/(radius+5)) {
+			createCoin(posX + (int)(radius*Math.cos(i)), posY + (int)(radius*Math.sin(i)));
+		}
 	}
 	
 }

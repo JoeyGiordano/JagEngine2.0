@@ -8,12 +8,13 @@ import com.giordano.engine.Renderer;
 public class Missile extends PhysicalObject {
 	
 	double facing = 0;
-	double speed = 1;
+	double speed = 1.2;
 	double timeToEscapeBy = 0;
 	boolean touchedByString = false;
 	
 	public Missile(int missileID, double posX, double posY) {
 		super("missile" + missileID, posX, posY, 6, 6, false, false, false);
+		if (distanceTo(gm.player) < 160) gm.destroyObject(this);
 	}
 	
 	@Override

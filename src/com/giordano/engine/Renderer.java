@@ -284,6 +284,10 @@ public class Renderer {
 	}
 	
 	public void drawfillRect(int offX, int offY, int width, int height, int color) {
+		drawfillRect(offX, offY, width, height, color, true);
+	}
+	
+	public void drawfillRect(int offX, int offY, int width, int height, int color, boolean clip) {
 		
 		/*
 		//don't render if off screen code
@@ -299,11 +303,12 @@ public class Renderer {
 		int newHeight = height;
 				
 		//clipping code (don't render stuff thats partially off screen
-		if (offX < 0) {newX -= offX;}
-		if (offY < 0) {newY -= offY;}
-		if (newWidth + offX >= pW) {newWidth -= (newWidth + offX - pW);}
-		if (newHeight + offY >= pH) {newHeight -= (newHeight + offY - pH);}
-		
+		if (clip) {
+			if (offX < 0) {newX -= offX;}
+			if (offY < 0) {newY -= offY;}
+			if (newWidth + offX >= pW) {newWidth -= (newWidth + offX - pW);}
+			if (newHeight + offY >= pH) {newHeight -= (newHeight + offY - pH);}
+		}
 		
 		for (int y = newY; y < newHeight; y++) {
 			for (int x = newX; x < newWidth; x++) {

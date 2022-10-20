@@ -1,6 +1,7 @@
 package com.giordano.game;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 import com.giordano.engine.GameContainer;
@@ -13,6 +14,7 @@ public class Player extends GameObject {
 	public boolean transitioning = false;
 	public int gameOver = -1;
 	public int score = 0;
+	public Bar coinBar;
 	
 	
 	public Player(String tag, double posX, double posY) {
@@ -25,13 +27,23 @@ public class Player extends GameObject {
 		ball.setVisualizeColor(Color.blue);
 		ball.velX = ballVel;
 		
+		coinBar = new Bar(140, 6, 40, 8, 5, new Color(150,150,250), Color.black);
+		
 	}
 	
 	@Override
 	public void update(GameContainer gc, GameManager gm, float dt) {
 		
-		if (ball.collisionObjects.length != 1) gameOver += 1;
-		if (gameOver == 60) gm.stopGame();
+		//collisions
+		int badCollisions = 0;
+		for (GameObject go : ball.collisionObjects) {
+			if (go.tag == "bkgd" || go.tag.contains("missile") || go.tag == "player") badCollisions++;
+			if (go.tag == "coin") coinBar.fill(1);
+		}
+		if (badCollisions != 1) gameOver += 1;
+		
+		
+		if (gameOver == 90) gm.stopGame();
 		if (gameOver > 0) return;
 		
 		if (gc.getInput().isButtonDown(MouseEvent.BUTTON1)) {
@@ -57,7 +69,8 @@ public class Player extends GameObject {
 				if (!g.tag.contains("missile")) continue;
 				Missile m = (Missile)g;
 				
-				if (distanceTo(m) < distanceTo(ball) && Math.abs(Constants.crossProduct2D(ball.posX-posX, ball.posY-posY, m.posX-posX, m.posY-posY)) < distanceTo(m)
+				if (distanceTo(m) < distanceTo(ball)
+						&& Math.abs(Constants.crossProduct2D(ball.posX-posX, ball.posY-posY, m.posX-posX, m.posY-posY)) < 0.1*squareDistanceTo(m)
 						&& 0 < Constants.dotProduct(ball.posX-posX, ball.posY-posY, m.posX-posX, m.posY-posY)) {
 					gm.destroyObject(m);
 					score++;
@@ -71,6 +84,12 @@ public class Player extends GameObject {
 			}
 		}
 		
+		//coin
+		if (coinBar.filledness == 1 && gc.getInput().isKeyDown(KeyEvent.VK_SPACE)) {
+			coinBar.setFill(0);
+			ball.velX = -1*ball.velX;
+			ball.velY = -1*ball.velY;
+		}
 		
 	}
 	
@@ -79,6 +98,7 @@ public class Player extends GameObject {
 		r.drawRect((int)Math.round(ball.posX+1), (int)Math.round(ball.posY+1), ball.width-3, ball.height-3, Color.green.getRGB());
 		
 		r.drawText("Score: " + score, 5+(int)camera.getOffX(), 5+(int)camera.getOffY(), new Color(90,0,240).getRGB());
+		r.drawfillRect(5+(int)camera.getOffX(), 5+(int)camera.getOffY(), 5,5, new Color(90,0,240).getRGB());
 		
 		if (gameOver < 1) {
 			if (!transitioning) r.drawLine(getCenterX(), getCenterY(), ball.getCenterX(), ball.getCenterY(), new Color(190, 50, 50).getRGB());
@@ -86,6 +106,8 @@ public class Player extends GameObject {
 		}
 		
 		if (gameOver > 0) r.drawText("Game Over", SCREEN_WIDTH/2 + (int)camera.getOffX() - 20, SCREEN_HEIGHT/2 + (int)camera.getOffY() - 5, Color.RED.getRGB());
+		
+		coinBar.render(gc, r);
 	}
 	
 }
