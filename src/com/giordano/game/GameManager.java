@@ -60,13 +60,7 @@ public class GameManager extends AbstractGame implements Constants {
 			coinTime = 0;
 		}
 		coinTime++;
-		player.ball.posX =0;
-		player.ball.posY = 0;
-		for (GameObject go : objects) {
-			if (go instanceof Missile && go.distanceTo(player.ball) < 30) {
-				destroyObject(go);
-			}
-		}
+		
 	}
 	
 	@Override
