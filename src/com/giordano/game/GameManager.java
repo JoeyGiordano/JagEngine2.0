@@ -46,10 +46,11 @@ public class GameManager extends AbstractGame implements Constants {
 		}
 		
 		//missiles
-		if (missileTime == missileCountdown) {
+		if (missileTime >= missileCountdown) {
 			createMissile((int)(Math.random()*1000-500),(int)(Math.random()*700-350));
 			missileTime = 0;
-			if (missileCountdown != 0 && Math.random() < 0.2) missileCountdown--;
+			if (Math.random() < 0.7) missileCountdown -= 10;
+			if (missileCountdown < 4) missileCountdown = 4;
 		}
 		missileTime++;
 		
@@ -59,6 +60,13 @@ public class GameManager extends AbstractGame implements Constants {
 			coinTime = 0;
 		}
 		coinTime++;
+		player.ball.posX =0;
+		player.ball.posY = 0;
+		for (GameObject go : objects) {
+			if (go instanceof Missile && go.distanceTo(player.ball) < 30) {
+				destroyObject(go);
+			}
+		}
 	}
 	
 	@Override

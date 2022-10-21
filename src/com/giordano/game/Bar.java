@@ -12,6 +12,9 @@ public class Bar implements Constants {
 	double max;
 	int width, height;
 	Color fillColor, borderColor;
+	Color barColor;
+	
+	int blinking = 0;
 	
 	public Bar(int posX, int posY, int width, int height, int max, Color fillColor, Color borderColor) {
 		this.posX = posX;
@@ -21,11 +24,24 @@ public class Bar implements Constants {
 		this.height = height;
 		this.fillColor = fillColor;
 		this.borderColor = borderColor;
+		barColor = fillColor;
 	}
 	
 	public void render(GameContainer gc, Renderer r) {
 		
-		r.drawfillRect(posX+1 + (int)(camera.getOffX()), posY+1 + (int)(camera.getOffY()), (int)((width-1)*filledness), height-1, fillColor.getRGB(), false);
+		if (filledness == 1) {
+			if (blinking > 7) {
+				barColor = new Color(160,0,255);
+			} if (blinking >= 14) {
+				blinking = 0;
+				barColor = new Color(255,0,160);
+			}
+		} else {
+			barColor = fillColor;
+		}
+		blinking++;
+		
+		r.drawfillRect(posX+1 + (int)(camera.getOffX()), posY+1 + (int)(camera.getOffY()), (int)((width-1)*filledness), height-1, barColor.getRGB(), false);
 		r.drawRect(posX + (int)(camera.getOffX()), posY + (int)(camera.getOffY()), width, height, borderColor.getRGB());
 		
 		
