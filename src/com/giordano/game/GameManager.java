@@ -49,7 +49,7 @@ public class GameManager extends AbstractGame implements Constants {
 		if (missileTime >= missileCountdown) {
 			createMissile((int)(Math.random()*1000-500),(int)(Math.random()*700-350));
 			missileTime = 0;
-			if (Math.random() < 0.7) missileCountdown -= 10;
+			if (Math.random() < 0.5) missileCountdown -= 5;
 			if (missileCountdown < 4) missileCountdown = 4;
 		}
 		missileTime++;
