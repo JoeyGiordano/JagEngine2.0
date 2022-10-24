@@ -150,6 +150,7 @@ public class Renderer {
 	}
 	
 	public void drawText(String text, int offX, int offY, int color) {
+		
 		int offset = 0;
 		
 		//offX -= camX;

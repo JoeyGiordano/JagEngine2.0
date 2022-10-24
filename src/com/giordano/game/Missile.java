@@ -30,7 +30,7 @@ public class Missile extends PhysicalObject {
 	public void render(GameContainer gc, Renderer r) {
 		super.render(gc, r);
 		r.drawCircle((int)Math.round(posX), (int)Math.round(posY), 3, Color.red.getRGB());
-		r.setPixel((int)(3*Math.cos(Math.toRadians(facing))) + (int)Math.round(posX), (int)(3*Math.sin(Math.toRadians(facing))) + (int)Math.round(posY), Color.black.getRGB());
+		r.setPixel((int)(3*Math.cos(Math.toRadians(facing))) + (int)Math.round(posX), (int)(3*Math.sin(Math.toRadians(facing))) + (int)Math.round(posY), new Color(220,200,200).getRGB());
 	}
 	
 

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 public class Image {
+	
 	private int w,h;
 	private int[] p;
 	private String path;

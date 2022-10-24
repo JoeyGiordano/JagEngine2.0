@@ -27,7 +27,7 @@ public class Player extends GameObject {
 		ball.setVisualizeColor(Color.blue);
 		ball.velX = ballVel;
 		
-		coinBar = new Bar(140, 6, 40, 8, 5, new Color(150,150,250), Color.black);
+		coinBar = new Bar(140, 6, 40, 8, 5, new Color(100,100,200), new Color(100,0,100)); //150,150,250
 		
 	}
 	

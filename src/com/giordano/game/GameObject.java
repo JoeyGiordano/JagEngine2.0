@@ -33,7 +33,7 @@ public abstract class GameObject implements Constants {
 	
 	public void render(GameContainer gc, Renderer r) {
 		r.setzDepth(zDepth);
-		if (visualize) r.setPixel((int)Math.round(getCenterX()), (int)Math.round(getCenterY()), visualizeColor.getRGB());
+		//if (visualize) r.setPixel((int)Math.round(getCenterX()), (int)Math.round(getCenterY()), visualizeColor.getRGB());
 	}
 	
 	public void destroy() {

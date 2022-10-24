@@ -2,7 +2,7 @@ package com.giordano.engine.gfx;
 
 public class Font {
 	
-	public static final Font STANDARD = new Font("/Fonts/comic.png");
+	public static final Font STANDARD = new Font("/fonts/comic.png");
 	
 	private Image fontImage;
 	private int[] offsets;

@@ -73,14 +73,14 @@ public class GameManager extends AbstractGame implements Constants {
 			r.drawText("High Score: " + highScore, 5+(int)camera.getOffX(), 5+(int)camera.getOffY(), new Color(90,0,240).getRGB());
 			return;
 		}
-		
+
 		double x = (gc.getInput().getMouseX() + camera.getOffX());
 		double y = (gc.getInput().getMouseY() + camera.getOffY());
 		r.drawCircle((int)Math.round(x), (int)Math.round(y), 2, new Color(0,235,0).getRGB());
 	}
 	
 	public void startGame() {
-		background = new ImageObject("bkgd",-400,-255,"/bkgd.jpg");
+		background = new ImageObject("bkgd",-400,-255,800,510);
 		background.setZdepth(0);
 		background.setVisualize(true);
 		background.setVisualizeColor(Color.red);
